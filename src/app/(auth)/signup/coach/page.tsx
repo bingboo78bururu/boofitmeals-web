@@ -9,7 +9,7 @@ export default async function SignupCoachPage() {
 
   const { data: coaches } = await supabase
     .from("profiles")
-    .select("id, name, bio, tags")
+    .select("id, name, bio, tags, photo_url")
     .eq("role", "coach");
 
   return (

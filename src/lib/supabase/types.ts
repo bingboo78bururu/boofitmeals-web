@@ -13,6 +13,7 @@ export interface Database {
           class_id: string | null;
           bio: string | null;
           tags: string[];
+          photo_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -22,6 +23,7 @@ export interface Database {
           class_id?: string | null;
           bio?: string | null;
           tags?: string[];
+          photo_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -31,6 +33,7 @@ export interface Database {
           class_id?: string | null;
           bio?: string | null;
           tags?: string[];
+          photo_url?: string | null;
           created_at?: string;
         };
         Relationships: [];

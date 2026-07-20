@@ -6,12 +6,15 @@ import { updateCoachProfile } from "@/lib/actions/coach";
 export function ProfileForm({
   bio,
   tags,
+  photoUrl,
 }: {
   bio: string | null;
   tags: string[];
+  photoUrl: string | null;
 }) {
   const [state, action, pending] = useActionState(updateCoachProfile, undefined);
-  const [editing, setEditing] = useState(!bio && tags.length === 0);
+  const [editing, setEditing] = useState(!bio && tags.length === 0 && !photoUrl);
+  const [preview, setPreview] = useState<string | null>(photoUrl);
 
   useEffect(() => {
     if (state && "success" in state) setEditing(false);
@@ -21,9 +24,23 @@ export function ProfileForm({
     return (
       <div className="flex flex-col gap-2 rounded-2xl border border-line bg-card p-5">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-sm text-ink-soft">
-            {bio || "아직 소개글이 없어요."}
-          </p>
+          <div className="flex items-center gap-3">
+            {photoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={photoUrl}
+                alt="프로필 사진"
+                className="h-14 w-14 shrink-0 rounded-full border border-line object-cover"
+              />
+            ) : (
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-cream-soft text-lg font-bold text-carrot-dark">
+                {"?"}
+              </div>
+            )}
+            <p className="text-sm text-ink-soft">
+              {bio || "아직 소개글이 없어요."}
+            </p>
+          </div>
           <button
             type="button"
             onClick={() => setEditing(true)}
@@ -53,6 +70,30 @@ export function ProfileForm({
       action={action}
       className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5"
     >
+      <div className="flex items-center gap-4">
+        {preview && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={preview}
+            alt="프로필 사진"
+            className="h-16 w-16 shrink-0 rounded-full border border-line object-cover"
+          />
+        )}
+        <label className="flex min-w-0 flex-1 cursor-pointer flex-col gap-1 text-sm">
+          <span className="font-medium">프로필 사진</span>
+          <input
+            type="file"
+            name="photo"
+            accept="image/png,image/jpeg"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              setPreview(file ? URL.createObjectURL(file) : photoUrl);
+            }}
+            className="w-full max-w-full truncate text-xs text-ink-soft file:mr-3 file:rounded-lg file:border-0 file:bg-cream-soft file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-carrot-dark"
+          />
+        </label>
+      </div>
+
       <div className="flex flex-col gap-1.5">
         <label htmlFor="bio" className="text-sm font-medium">
           한줄 소개
@@ -90,7 +131,7 @@ export function ProfileForm({
         >
           {pending ? "저장 중..." : "저장하기"}
         </button>
-        {(bio || tags.length > 0) && (
+        {(bio || tags.length > 0 || photoUrl) && (
           <button
             type="button"
             onClick={() => setEditing(false)}

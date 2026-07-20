@@ -80,9 +80,34 @@ export async function updateCoachProfile(
     : [];
 
   const supabase = await createClient();
+
+  let photoUrl: string | undefined;
+  const photo = formData.get("photo");
+  if (photo instanceof File && photo.size > 0) {
+    if (photo.size > 5 * 1024 * 1024) {
+      return { error: "사진은 5MB 이하로 올려주세요." };
+    }
+    const ext = photo.type === "image/png" ? "png" : "jpg";
+    const path = `${profile.id}/photo.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("profile-photos")
+      .upload(path, await photo.arrayBuffer(), {
+        upsert: true,
+        contentType: photo.type,
+      });
+
+    if (uploadError) return { error: uploadError.message };
+
+    photoUrl = `${supabase.storage.from("profile-photos").getPublicUrl(path).data.publicUrl}?t=${Date.now()}`;
+  }
+
   const { error } = await supabase
     .from("profiles")
-    .update({ bio: bio || null, tags })
+    .update({
+      bio: bio || null,
+      tags,
+      ...(photoUrl ? { photo_url: photoUrl } : {}),
+    })
     .eq("id", profile.id);
 
   if (error) return { error: error.message };

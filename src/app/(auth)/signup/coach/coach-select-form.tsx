@@ -3,7 +3,13 @@
 import { useActionState } from "react";
 import { chooseCoach } from "@/lib/actions/onboarding";
 
-type Coach = { id: string; name: string; bio: string | null; tags: string[] };
+type Coach = {
+  id: string;
+  name: string;
+  bio: string | null;
+  tags: string[];
+  photo_url: string | null;
+};
 
 export function CoachSelectForm({ coaches }: { coaches: Coach[] }) {
   const [state, action, pending] = useActionState(chooseCoach, undefined);
@@ -17,9 +23,18 @@ export function CoachSelectForm({ coaches }: { coaches: Coach[] }) {
             className="flex cursor-pointer flex-col overflow-hidden rounded-2xl border-2 border-line bg-card has-[:checked]:border-carrot"
           >
             <input type="radio" name="coach_id" value={c.id} required className="sr-only" />
-            <div className="flex aspect-square items-center justify-center bg-cream-soft text-3xl font-bold text-carrot-dark">
-              {c.name.slice(0, 1)}
-            </div>
+            {c.photo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={c.photo_url}
+                alt={`${c.name} 프로필 사진`}
+                className="aspect-square w-full object-cover"
+              />
+            ) : (
+              <div className="flex aspect-square items-center justify-center bg-cream-soft text-3xl font-bold text-carrot-dark">
+                {c.name.slice(0, 1)}
+              </div>
+            )}
             <div className="flex flex-col gap-1.5 p-3">
               <p className="text-sm font-bold">{c.name}</p>
               {c.bio && (

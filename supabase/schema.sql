@@ -26,6 +26,7 @@ create table profiles (
   class_id uuid references classes (id) on delete set null,
   bio text,
   tags text[] not null default '{}',
+  photo_url text,
   created_at timestamptz not null default now()
 );
 

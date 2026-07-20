@@ -74,7 +74,7 @@ export default async function CoachPage() {
         <p className="mb-3 text-xs text-ink-soft">
           회원가입 시 코치 선택 화면에 표시되는 소개글과 해시태그예요.
         </p>
-        <ProfileForm bio={profile.bio} tags={profile.tags} />
+        <ProfileForm bio={profile.bio} tags={profile.tags} photoUrl={profile.photo_url} />
       </section>
 
       {(!missions || missions.length === 0) && (
