@@ -201,10 +201,27 @@ create policy "assignments managed by admin"
   to authenticated
   with check (public.my_role() = 'admin');
 
+create policy "assignments insert by member"
+  on coach_assignments for insert
+  to authenticated
+  with check (
+    member_id = auth.uid()
+    and exists (select 1 from profiles p where p.id = coach_id and p.role = 'coach')
+  );
+
 create policy "assignments update by admin"
   on coach_assignments for update
   to authenticated
   using (public.my_role() = 'admin');
+
+create policy "assignments update by member"
+  on coach_assignments for update
+  to authenticated
+  using (member_id = auth.uid())
+  with check (
+    member_id = auth.uid()
+    and exists (select 1 from profiles p where p.id = coach_id and p.role = 'coach')
+  );
 
 create policy "assignments delete by admin"
   on coach_assignments for delete
