@@ -80,6 +80,7 @@ export interface Database {
           photo_url: string | null;
           ai_score: number | null;
           ai_score_reason: string | null;
+          coach_score: number | null;
           created_at: string;
         };
         Insert: {
@@ -91,6 +92,7 @@ export interface Database {
           photo_url?: string | null;
           ai_score?: number | null;
           ai_score_reason?: string | null;
+          coach_score?: number | null;
           created_at?: string;
         };
         Update: {
@@ -102,6 +104,7 @@ export interface Database {
           photo_url?: string | null;
           ai_score?: number | null;
           ai_score_reason?: string | null;
+          coach_score?: number | null;
           created_at?: string;
         };
         Relationships: [];

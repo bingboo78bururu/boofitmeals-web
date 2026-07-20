@@ -6,6 +6,7 @@ import { MissionForm } from "./mission-form";
 import { DateLinkContent } from "./date-link-content";
 import { mealLabel } from "@/lib/roles";
 import { addDays, isValidDateString, todayString } from "@/lib/dates";
+import { finalScore } from "@/lib/score";
 import type { MealType } from "@/lib/supabase/types";
 
 const MEALS = (Object.keys(mealLabel) as MealType[]).map((type) => ({
@@ -113,17 +114,19 @@ export default async function MemberPage({
         .maybeSingle(),
       supabase
         .from("missions")
-        .select("id, meal_type, note, photo_url, ai_score, ai_score_reason")
+        .select(
+          "id, meal_type, note, photo_url, ai_score, ai_score_reason, coach_score"
+        )
         .eq("member_id", profile.id)
         .eq("mission_date", selectedDate),
       supabase
         .from("missions")
-        .select("ai_score")
+        .select("ai_score, coach_score")
         .eq("member_id", profile.id),
     ]);
 
   const carrotCount = (allMissionScores ?? []).reduce(
-    (sum, m) => sum + (m.ai_score ?? 0),
+    (sum, m) => sum + finalScore(m),
     0
   );
 
@@ -202,6 +205,7 @@ export default async function MemberPage({
                     existingPhotoUrl={mission?.photo_url ?? null}
                     existingAiScore={mission?.ai_score ?? null}
                     existingAiScoreReason={mission?.ai_score_reason ?? null}
+                    existingCoachScore={mission?.coach_score ?? null}
                   />
                 ) : (
                   <>
@@ -227,6 +231,11 @@ export default async function MemberPage({
                             {mission.ai_score_reason
                               ? ` · ${mission.ai_score_reason}`
                               : ""}
+                          </p>
+                        )}
+                        {mission.coach_score !== null && (
+                          <p className="rounded-lg bg-leaf/10 px-3 py-2 text-xs text-leaf-dark">
+                            🥕 코치 조정 점수 {mission.coach_score}점
                           </p>
                         )}
                       </>

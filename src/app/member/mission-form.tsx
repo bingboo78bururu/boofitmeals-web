@@ -60,6 +60,7 @@ export function MissionForm({
   existingPhotoUrl,
   existingAiScore,
   existingAiScoreReason,
+  existingCoachScore,
 }: {
   mealType: MealType;
   mealLabel: string;
@@ -67,6 +68,7 @@ export function MissionForm({
   existingPhotoUrl: string | null;
   existingAiScore: number | null;
   existingAiScoreReason: string | null;
+  existingCoachScore: number | null;
 }) {
   const [state, action, pending] = useActionState(submitMission, undefined);
   const [preview, setPreview] = useState<string | null>(existingPhotoUrl);
@@ -113,6 +115,11 @@ export function MissionForm({
           <p className="rounded-lg bg-cream-soft px-3 py-2 text-xs text-ink-soft">
             🤖 AI 채점 {existingAiScore}점
             {existingAiScoreReason ? ` · ${existingAiScoreReason}` : ""}
+          </p>
+        )}
+        {existingCoachScore !== null && (
+          <p className="rounded-lg bg-leaf/10 px-3 py-2 text-xs text-leaf-dark">
+            🥕 코치 조정 점수 {existingCoachScore}점
           </p>
         )}
 

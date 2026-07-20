@@ -29,3 +29,34 @@ export async function submitFeedback(
   revalidatePath("/member");
   return { success: true };
 }
+
+export async function overrideScore(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  await requireRole("coach");
+
+  const missionId = String(formData.get("mission_id") ?? "");
+  if (!missionId) return { error: "잘못된 요청이에요." };
+
+  const scoreRaw = String(formData.get("score") ?? "");
+  const score = scoreRaw === "" ? null : Number(scoreRaw);
+  if (score !== null && ![0, 1, 2].includes(score)) {
+    return { error: "점수는 0~2 사이여야 해요." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("missions")
+    .update({ coach_score: score })
+    .eq("id", missionId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/coach");
+  revalidatePath("/member");
+  revalidatePath("/member/calendar");
+  revalidatePath("/member/ranking");
+  revalidatePath("/admin");
+  return { success: true };
+}

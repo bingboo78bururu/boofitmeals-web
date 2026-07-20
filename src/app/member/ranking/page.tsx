@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { finalScore } from "@/lib/score";
 
 export default async function RankingPage() {
   const profile = await requireRole("member");
@@ -7,12 +8,12 @@ export default async function RankingPage() {
 
   const [{ data: members }, { data: missions }] = await Promise.all([
     supabase.from("profiles").select("id, name").eq("role", "member"),
-    supabase.from("missions").select("member_id, ai_score"),
+    supabase.from("missions").select("member_id, ai_score, coach_score"),
   ]);
 
   const counts = new Map<string, number>();
   for (const m of missions ?? []) {
-    counts.set(m.member_id, (counts.get(m.member_id) ?? 0) + (m.ai_score ?? 0));
+    counts.set(m.member_id, (counts.get(m.member_id) ?? 0) + finalScore(m));
   }
 
   const ranking = (members ?? [])

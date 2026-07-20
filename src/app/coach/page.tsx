@@ -1,7 +1,9 @@
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { FeedbackForm } from "./feedback-form";
+import { ScoreOverride } from "./score-override";
 import { mealLabel } from "@/lib/roles";
+import { finalScore } from "@/lib/score";
 import type { MealType } from "@/lib/supabase/types";
 
 export default async function CoachPage() {
@@ -23,7 +25,7 @@ export default async function CoachPage() {
       ? supabase
           .from("missions")
           .select(
-            "id, member_id, mission_date, meal_type, note, photo_url, ai_score, ai_score_reason"
+            "id, member_id, mission_date, meal_type, note, photo_url, ai_score, ai_score_reason, coach_score"
           )
           .in("member_id", memberIds)
           .order("mission_date", { ascending: false })
@@ -38,6 +40,7 @@ export default async function CoachPage() {
             photo_url: string | null;
             ai_score: number | null;
             ai_score_reason: string | null;
+            coach_score: number | null;
           }[],
         }),
   ]);
@@ -100,16 +103,29 @@ export default async function CoachPage() {
                   <p className="whitespace-pre-wrap text-sm text-ink-soft">
                     {mission.note}
                   </p>
-                  {mission.ai_score !== null && (
-                    <span className="w-fit rounded-full bg-cream-soft px-2 py-0.5 text-xs text-carrot-dark">
-                      🤖 AI 채점 {mission.ai_score}점
-                      {mission.ai_score_reason
-                        ? ` · ${mission.ai_score_reason}`
-                        : ""}
-                    </span>
-                  )}
+                  <div className="flex flex-wrap gap-1.5">
+                    {mission.ai_score !== null && (
+                      <span className="w-fit rounded-full bg-cream-soft px-2 py-0.5 text-xs text-carrot-dark">
+                        🤖 AI 채점 {mission.ai_score}점
+                        {mission.ai_score_reason
+                          ? ` · ${mission.ai_score_reason}`
+                          : ""}
+                      </span>
+                    )}
+                    {mission.coach_score !== null && (
+                      <span className="w-fit rounded-full bg-leaf/10 px-2 py-0.5 text-xs text-leaf-dark">
+                        🥕 최종 점수 {finalScore(mission)}점 (코치 조정)
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
+
+              <ScoreOverride
+                missionId={mission.id}
+                aiScore={mission.ai_score}
+                coachScore={mission.coach_score}
+              />
 
               {existingFeedback ? (
                 <div className="mt-3 rounded-xl bg-leaf/10 px-3 py-2 text-sm">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { todayString } from "@/lib/dates";
+import { finalScore } from "@/lib/score";
 import type { MealType } from "@/lib/supabase/types";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -71,7 +72,7 @@ export default async function CalendarPage({
 
   const { data: missions } = await supabase
     .from("missions")
-    .select("mission_date, meal_type, ai_score")
+    .select("mission_date, meal_type, ai_score, coach_score")
     .eq("member_id", profile.id)
     .gte("mission_date", monthStart.toISOString().slice(0, 10))
     .lte("mission_date", monthEnd.toISOString().slice(0, 10));
@@ -80,7 +81,7 @@ export default async function CalendarPage({
   for (const m of missions ?? []) {
     const day = Number(m.mission_date.slice(8, 10));
     if (!scoresByDay.has(day)) scoresByDay.set(day, new Map());
-    scoresByDay.get(day)!.set(m.meal_type, m.ai_score ?? 0);
+    scoresByDay.get(day)!.set(m.meal_type, finalScore(m));
   }
   const markedDays = new Set(scoresByDay.keys());
 
