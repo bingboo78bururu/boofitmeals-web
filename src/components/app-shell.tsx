@@ -48,9 +48,7 @@ export function AppShell({
             <div className="flex items-center gap-3 text-sm">
               <span>
                 <span className="text-carrot-dark">{name}</span>{" "}
-                <span className="font-medium text-carrot-dark">
-                  {roleLabel[role]}
-                </span>
+                <span className="text-carrot-dark">{roleLabel[role]}</span>
               </span>
               <form action={logout}>
                 <button className="text-ink-soft hover:text-ink">
