@@ -172,19 +172,6 @@ export function GrowthChart({
                 strokeWidth={2}
               />
             ))}
-
-            {/* 끝점 라벨 */}
-            <text
-              x={x(times[times.length - 1])}
-              y={y(last.value) - 14}
-              textAnchor="end"
-              className="fill-carrot-dark"
-              fontSize={16}
-              fontWeight={700}
-            >
-              {last.value}
-              {suffix}
-            </text>
           </svg>
 
           {hovered && (
