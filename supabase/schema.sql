@@ -312,13 +312,17 @@ create policy "feedback select"
       select 1 from missions m
       where m.id = feedback.mission_id and m.member_id = auth.uid()
     )
-    or (
-      public.my_class_id() is not null
-      and exists (
-        select 1 from missions m
-        join profiles p on p.id = m.member_id
-        where m.id = feedback.mission_id and p.class_id = public.my_class_id()
-      )
+  );
+
+create policy "feedback select by classmate"
+  on feedback for select
+  to authenticated
+  using (
+    public.my_class_id() is not null
+    and exists (
+      select 1 from missions m
+      join profiles p on p.id = m.member_id
+      where m.id = feedback.mission_id and p.class_id = public.my_class_id()
     )
   );
 
