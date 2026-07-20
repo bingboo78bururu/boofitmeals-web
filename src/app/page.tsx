@@ -22,7 +22,7 @@ export default function Home() {
         <span className="rounded-full bg-cream-soft px-4 py-1.5 text-sm font-medium text-carrot-dark">
           운동만큼 중요한 식단 관리
         </span>
-        <h1 className="mt-6 text-balance text-4xl font-extrabold leading-tight sm:text-5xl">
+        <h1 className="mt-6 text-balance text-3xl font-extrabold leading-tight sm:text-5xl">
           뚜렷한 목표를 세우고,
           <br />
           매일의 실천을 <span className="text-carrot">당근</span>으로 쌓아요
