@@ -40,7 +40,7 @@ export default async function MyPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-bold">하위 목표</h2>
+        <h2 className="mb-3 text-lg font-bold">나의 목표</h2>
         {goal ? (
           <GoalForm initial={goalWithLatest} unit={goal.unit} />
         ) : (
