@@ -49,7 +49,10 @@ export async function saveGoal(
     { onConflict: "member_id" }
   );
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("[saveGoal] goals upsert failed", error);
+    return { error: error.message };
+  }
 
   // 목표의 "현재" 수치도 성장 그래프에 오늘 기록으로 남긴다.
   const field = BODY_LOG_FIELD_BY_UNIT[unit];
@@ -65,7 +68,10 @@ export async function saveGoal(
   const { error: logError } = await supabase
     .from("body_logs")
     .upsert(logPayload, { onConflict: "member_id,log_date" });
-  if (logError) return { error: logError.message };
+  if (logError) {
+    console.error("[saveGoal] body_logs upsert failed", logError);
+    return { error: logError.message };
+  }
 
   revalidatePath("/member");
   revalidatePath("/member/mypage");
@@ -91,18 +97,25 @@ export async function logBody(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("body_logs").upsert(
-    {
-      member_id: profile.id,
-      log_date: todayString(),
-      weight_kg: weightKg,
-      body_fat_pct: bodyFatPct,
-      muscle_mass_kg: muscleMassKg,
-    },
-    { onConflict: "member_id,log_date" }
-  );
+  const { error, data } = await supabase
+    .from("body_logs")
+    .upsert(
+      {
+        member_id: profile.id,
+        log_date: todayString(),
+        weight_kg: weightKg,
+        body_fat_pct: bodyFatPct,
+        muscle_mass_kg: muscleMassKg,
+      },
+      { onConflict: "member_id,log_date" }
+    )
+    .select();
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("[logBody] upsert failed", error);
+    return { error: error.message };
+  }
+  console.error("[logBody] upsert result", JSON.stringify(data));
 
   revalidatePath("/member");
   return { success: true };
