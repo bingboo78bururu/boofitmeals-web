@@ -41,6 +41,9 @@ export async function signup(
   });
 
   if (error) {
+    if (error.message.toLowerCase().includes("already registered")) {
+      return { error: "이미 등록된 회원입니다." };
+    }
     return { error: error.message };
   }
 

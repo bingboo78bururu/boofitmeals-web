@@ -27,5 +27,6 @@
 | 21 | 회원가입 3단계 분리 (계정정보 → 영양코치 선택 → 클래스 선택) + 클래스 개념 도입, 랭킹보드는 같은 클래스끼리만 | finished | `/signup` → `/signup/coach` → `/signup/class` → `/member`. 각 단계 "나중에 선택할게요" 건너뛰기 가능. `classes` 테이블 추가, 운영자 화면(`/admin`)에 클래스 생성 UI 추가. 랭킹보드는 `profiles.class_id` 기준으로 스코프, 클래스 미배정 회원은 안내 문구 표시 |
 | 22 | 영양코치가 피드백 남길 때 "duplicate key ... feedback_mission_id_key" DB 에러 노출 | finished | 원인: 피드백은 `insert`만 가능해서 이미 피드백이 있는 미션에 다시 남기면 그대로 에러. `upsert`로 변경 + 코치가 자기 피드백을 수정할 수 있도록 뷰/수정 모드 토글 추가(목표·오늘의미션과 동일한 패턴). DB에 feedback UPDATE 정책 추가 필요 |
 | 23 | 회원가입 온보딩에서 코치 선택 시 "new row violates row-level security policy for table coach_assignments" 에러 | finished | 원인: `coach_assignments` insert/update 권한이 운영자 전용이라, 회원 본인이 온보딩에서 코치를 선택하는 새 기능과 충돌. 회원이 본인 배정만(실제 코치 계정에 한해) insert/update 할 수 있는 정책 추가 |
+| 24 | 회원가입 시 이미 등록된 이메일이면 영어 에러("User already registered") 노출 | finished | "이미 등록된 회원입니다."로 한글 메시지 표시 |
 
 > 새 QA 요청 주시면 이 표에 to go로 추가하고, 진행 상태 바뀔 때마다 업데이트할게요.
