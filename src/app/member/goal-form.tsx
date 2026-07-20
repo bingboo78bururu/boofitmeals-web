@@ -19,7 +19,7 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
 
   if (!editing && initial) {
     return (
-      <div className="flex flex-col gap-4 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 rounded-2xl border border-line bg-card p-5">
         <div className="flex gap-6 text-sm">
           <div>
             <p className="text-xs text-ink-soft">현재 체지방률</p>
@@ -37,9 +37,9 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="self-start rounded-xl border border-line px-4 py-2 text-sm font-medium hover:border-carrot sm:self-auto"
+          className="self-end text-xs font-medium text-ink-soft hover:text-carrot"
         >
-          수정
+          수정하기
         </button>
       </div>
     );
