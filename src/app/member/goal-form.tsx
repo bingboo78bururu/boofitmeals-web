@@ -69,7 +69,7 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
           {UNITS.map((u) => (
             <label
               key={u}
-              className="flex cursor-pointer items-center gap-2 rounded-xl border border-line px-3 py-2 text-sm has-[:checked]:border-carrot has-[:checked]:bg-carrot-light/20"
+              className="flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border border-line px-3 py-2 text-xs has-[:checked]:border-carrot has-[:checked]:bg-carrot-light/20"
             >
               <input
                 type="radio"
