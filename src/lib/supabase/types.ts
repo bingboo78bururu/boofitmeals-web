@@ -156,7 +156,12 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      name_taken: {
+        Args: { check_name: string };
+        Returns: boolean;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

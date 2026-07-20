@@ -17,7 +17,7 @@ export default function SignupPage() {
       <form action={action} className="mt-8 flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="name" className="text-sm font-medium">
-            이름
+            닉네임
           </label>
           <input
             id="name"

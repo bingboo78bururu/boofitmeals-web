@@ -27,13 +27,21 @@ export async function signup(
   const role = String(formData.get("role") ?? "member") as UserRole;
 
   if (!name || !email || !password) {
-    return { error: "이름, 이메일, 비밀번호를 모두 입력해주세요." };
+    return { error: "닉네임, 이메일, 비밀번호를 모두 입력해주세요." };
   }
   if (password.length < 6) {
     return { error: "비밀번호는 6자 이상이어야 해요." };
   }
 
   const supabase = await createClient();
+
+  const { data: nameTaken } = await supabase.rpc("name_taken", {
+    check_name: name,
+  });
+  if (nameTaken) {
+    return { error: "이미 사용 중인 닉네임이에요." };
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -43,6 +51,9 @@ export async function signup(
   if (error) {
     if (error.message.toLowerCase().includes("already registered")) {
       return { error: "이미 등록된 회원입니다." };
+    }
+    if (error.message.toLowerCase().includes("database error")) {
+      return { error: "이미 사용 중인 닉네임이에요." };
     }
     return { error: error.message };
   }

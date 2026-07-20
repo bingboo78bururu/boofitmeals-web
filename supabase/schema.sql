@@ -19,7 +19,7 @@ create table classes (
 create table profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   role user_role not null default 'member',
-  name text not null,
+  name text not null unique,
   class_id uuid references classes (id) on delete set null,
   created_at timestamptz not null default now()
 );
@@ -92,6 +92,18 @@ stable
 as $$
   select role from public.profiles where id = auth.uid();
 $$;
+
+-- 회원가입(로그인 전) 시 닉네임 중복 여부를 확인하기 위한 헬퍼
+create function public.name_taken(check_name text)
+returns boolean
+language sql
+security definer set search_path = public
+stable
+as $$
+  select exists (select 1 from profiles where name = check_name);
+$$;
+
+grant execute on function public.name_taken(text) to anon, authenticated;
 
 -- 회원은 note/photo/ai_score만, 담당 코치는 coach_score만 수정 가능하도록 컬럼 단위로 제한
 create function public.enforce_mission_update_columns()
