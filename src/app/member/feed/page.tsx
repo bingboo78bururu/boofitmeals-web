@@ -4,6 +4,8 @@ import { mealLabel } from "@/lib/roles";
 import { finalScore } from "@/lib/score";
 import type { MealType } from "@/lib/supabase/types";
 
+const TOP_RANK_COUNT = 5;
+
 export default async function MemberFeedPage() {
   const profile = await requireRole("member");
   const supabase = await createClient();
@@ -12,7 +14,7 @@ export default async function MemberFeedPage() {
     return (
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-2xl font-bold">클래스 피드</h1>
+          <h1 className="text-2xl font-bold">우리반</h1>
           <p className="mt-1 text-sm text-ink-soft">
             같은 클래스 동료들의 오늘 식단을 확인해보세요.
           </p>
@@ -33,29 +35,52 @@ export default async function MemberFeedPage() {
   const memberIds = (classmates ?? []).map((m) => m.id);
   const nameByMember = new Map((classmates ?? []).map((m) => [m.id, m.name]));
 
-  const { data: missions } = memberIds.length
-    ? await supabase
-        .from("missions")
-        .select(
-          "id, member_id, mission_date, meal_type, note, photo_url, ai_score, ai_score_reason, coach_score"
-        )
-        .in("member_id", memberIds)
-        .order("mission_date", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(30)
-    : {
-        data: [] as {
-          id: string;
-          member_id: string;
-          mission_date: string;
-          meal_type: MealType;
-          note: string | null;
-          photo_url: string | null;
-          ai_score: number | null;
-          ai_score_reason: string | null;
-          coach_score: number | null;
-        }[],
-      };
+  const [{ data: missions }, { data: allScores }] = await Promise.all([
+    memberIds.length
+      ? supabase
+          .from("missions")
+          .select(
+            "id, member_id, mission_date, meal_type, note, photo_url, ai_score, ai_score_reason, coach_score"
+          )
+          .in("member_id", memberIds)
+          .order("mission_date", { ascending: false })
+          .order("created_at", { ascending: false })
+          .limit(30)
+      : Promise.resolve({
+          data: [] as {
+            id: string;
+            member_id: string;
+            mission_date: string;
+            meal_type: MealType;
+            note: string | null;
+            photo_url: string | null;
+            ai_score: number | null;
+            ai_score_reason: string | null;
+            coach_score: number | null;
+          }[],
+        }),
+    memberIds.length
+      ? supabase
+          .from("missions")
+          .select("member_id, ai_score, coach_score")
+          .in("member_id", memberIds)
+      : Promise.resolve({
+          data: [] as {
+            member_id: string;
+            ai_score: number | null;
+            coach_score: number | null;
+          }[],
+        }),
+  ]);
+
+  const carrotCounts = new Map<string, number>();
+  for (const m of allScores ?? []) {
+    carrotCounts.set(m.member_id, (carrotCounts.get(m.member_id) ?? 0) + finalScore(m));
+  }
+  const topRanking = (classmates ?? [])
+    .map((m) => ({ ...m, carrots: carrotCounts.get(m.id) ?? 0 }))
+    .sort((a, b) => b.carrots - a.carrots)
+    .slice(0, TOP_RANK_COUNT);
 
   const missionIds = (missions ?? []).map((m) => m.id);
   const { data: feedbacks } = missionIds.length
@@ -72,11 +97,47 @@ export default async function MemberFeedPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold">클래스 피드</h1>
+        <h1 className="text-2xl font-bold">우리반</h1>
         <p className="mt-1 text-sm text-ink-soft">
           같은 클래스 동료 {classmates?.length ?? 0}명의 식단을 확인해보세요.
         </p>
       </div>
+
+      {topRanking.length > 0 && (
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <p className="mb-3 text-sm font-bold">🥕 당근 랭킹 TOP {TOP_RANK_COUNT}</p>
+          <ol className="flex flex-col gap-2">
+            {topRanking.map((member, i) => {
+              const isMe = member.id === profile.id;
+              return (
+                <li
+                  key={member.id}
+                  className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm ${
+                    isMe ? "bg-carrot-light/20" : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-5 text-center font-bold text-ink-soft">
+                      {i + 1}
+                    </span>
+                    <span className="font-medium">
+                      {member.name}
+                      {isMe && (
+                        <span className="ml-1.5 text-xs text-carrot-dark">
+                          (나)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <span className="font-bold text-carrot-dark">
+                    {member.carrots}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      )}
 
       {(!missions || missions.length === 0) && (
         <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">

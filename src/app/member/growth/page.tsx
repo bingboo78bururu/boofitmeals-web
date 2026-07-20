@@ -1,0 +1,78 @@
+import Link from "next/link";
+import { requireRole } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
+import { GrowthChart } from "./growth-chart";
+
+export default async function GrowthPage() {
+  const profile = await requireRole("member");
+  const supabase = await createClient();
+
+  const { data: goal } = await supabase
+    .from("goals")
+    .select("unit, current_value, target_value, target_date")
+    .eq("member_id", profile.id)
+    .maybeSingle();
+
+  if (!goal || !goal.target_value) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-2xl font-bold">성장</h1>
+          <p className="mt-1 text-sm text-ink-soft">
+            체중/체지방률 변화를 그래프로 확인해요.
+          </p>
+        </div>
+        <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
+          아직 목표가 설정되지 않았어요.{" "}
+          <Link
+            href="/member/mypage"
+            className="font-medium text-carrot-dark hover:underline"
+          >
+            마이페이지에서 설정하기
+          </Link>
+        </p>
+      </div>
+    );
+  }
+
+  const field = goal.unit === "weight_kg" ? "weight_kg" : "body_fat_pct";
+  const { data: logs } = await supabase
+    .from("body_logs")
+    .select(`log_date, ${field}`)
+    .eq("member_id", profile.id)
+    .not(field, "is", null)
+    .order("log_date", { ascending: true })
+    .limit(30);
+
+  const points = ((logs ?? []) as unknown as Record<string, string | number | null>[])
+    .map((row) => ({
+      date: row.log_date as string,
+      value: Number(row[field]),
+    }));
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-bold">성장</h1>
+        <p className="mt-1 text-sm text-ink-soft">
+          {goalUnitLabel[goal.unit]} 변화를 목표선과 함께 확인해요.
+        </p>
+      </div>
+
+      {points.length < 2 ? (
+        <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
+          홈에서 오늘의 {goalUnitLabel[goal.unit]}를 며칠 더 기록하면 그래프가
+          나타나요.
+        </p>
+      ) : (
+        <GrowthChart
+          points={points}
+          target={goal.target_value}
+          unit={goal.unit}
+          suffix={goalUnitSuffix[goal.unit]}
+        />
+      )}
+    </div>
+  );
+}

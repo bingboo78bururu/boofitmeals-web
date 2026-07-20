@@ -32,6 +32,15 @@ export function RankingIcon() {
   );
 }
 
+export function GrowthIcon() {
+  return (
+    <Svg>
+      <path d="M4 16l5-5 4 4 7-8" />
+      <path d="M15 7h5v5" />
+    </Svg>
+  );
+}
+
 export function HomeIcon() {
   return (
     <Svg>

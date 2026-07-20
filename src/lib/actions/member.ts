@@ -127,7 +127,6 @@ export async function updateClass(
   if (error) return { error: error.message };
 
   revalidatePath("/member/mypage");
-  revalidatePath("/member/ranking");
   revalidatePath("/member/feed");
   revalidatePath("/admin");
   return { success: true };
@@ -193,7 +192,7 @@ export async function submitMission(
 
   revalidatePath("/member");
   revalidatePath("/member/calendar");
-  revalidatePath("/member/ranking");
+  revalidatePath("/member/feed");
   revalidatePath("/coach");
   revalidatePath("/admin");
   return { success: true, aiScore: aiScore === undefined ? "unchanged" : aiScore };

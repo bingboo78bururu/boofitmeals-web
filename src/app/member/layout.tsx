@@ -4,14 +4,14 @@ import { GoalBanner } from "@/components/goal-banner";
 import {
   CalendarIcon,
   FeedIcon,
+  GrowthIcon,
   HomeIcon,
   MyPageIcon,
-  RankingIcon,
 } from "@/components/icons";
 
 const bottomNav = [
-  { href: "/member/feed", label: "피드", icon: <FeedIcon /> },
-  { href: "/member/ranking", label: "랭킹", icon: <RankingIcon /> },
+  { href: "/member/feed", label: "우리반", icon: <FeedIcon /> },
+  { href: "/member/growth", label: "성장", icon: <GrowthIcon /> },
   { href: "/member", label: "인증", icon: <HomeIcon /> },
   { href: "/member/calendar", label: "당근캘린더", icon: <CalendarIcon /> },
   { href: "/member/mypage", label: "MY", icon: <MyPageIcon /> },

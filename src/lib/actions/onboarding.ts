@@ -42,7 +42,7 @@ export async function chooseClass(
       .eq("id", profile.id);
 
     if (error) return { error: error.message };
-    revalidatePath("/member/ranking");
+    revalidatePath("/member/feed");
   }
 
   redirect("/member");

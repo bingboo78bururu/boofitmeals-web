@@ -59,7 +59,7 @@ export async function overrideScore(
   revalidatePath("/coach");
   revalidatePath("/member");
   revalidatePath("/member/calendar");
-  revalidatePath("/member/ranking");
+  revalidatePath("/member/feed");
   revalidatePath("/admin");
   return { success: true };
 }
