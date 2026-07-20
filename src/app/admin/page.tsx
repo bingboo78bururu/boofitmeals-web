@@ -1,0 +1,209 @@
+import { requireRole } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+import { AssignCoachForm } from "./assign-coach-form";
+import { todayString } from "@/lib/dates";
+
+const BUCKETS = [
+  { label: "80% 이상", test: (r: number) => r >= 0.8 },
+  { label: "50~79%", test: (r: number) => r >= 0.5 },
+  { label: "20~49%", test: (r: number) => r >= 0.2 },
+  { label: "1~19%", test: (r: number) => r > 0 },
+  { label: "0%", test: () => true },
+];
+
+export default async function AdminPage() {
+  await requireRole("admin");
+  const supabase = await createClient();
+
+  const today = todayString();
+  const [year, month, day] = today.split("-").map(Number);
+  const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
+  const daysElapsed = day;
+
+  const [
+    { data: members },
+    { data: coaches },
+    { data: assignments },
+    { data: monthMissions },
+    { data: todayMissions },
+  ] = await Promise.all([
+    supabase.from("profiles").select("id, name").eq("role", "member"),
+    supabase.from("profiles").select("id, name").eq("role", "coach"),
+    supabase.from("coach_assignments").select("member_id, coach_id"),
+    supabase
+      .from("missions")
+      .select("member_id, mission_date, ai_score")
+      .gte("mission_date", monthStart),
+    supabase.from("missions").select("member_id").eq("mission_date", today),
+  ]);
+
+  const coachNameById = new Map((coaches ?? []).map((c) => [c.id, c.name]));
+  const coachIdByMember = new Map(
+    (assignments ?? []).map((a) => [a.member_id, a.coach_id])
+  );
+
+  // 하루 최대 3끼(아침/점심/저녁)까지 인증 가능하므로, "수행률"은 끼니 수가 아니라
+  // 최소 한 끼라도 인증한 날짜 수 기준으로 집계
+  const monthDatesByMember = new Map<string, Set<string>>();
+  for (const m of monthMissions ?? []) {
+    if (!monthDatesByMember.has(m.member_id)) {
+      monthDatesByMember.set(m.member_id, new Set());
+    }
+    monthDatesByMember.get(m.member_id)!.add(m.mission_date);
+  }
+  const monthCountByMember = new Map<string, number>(
+    [...monthDatesByMember.entries()].map(([id, dates]) => [id, dates.size])
+  );
+
+  const memberCount = members?.length ?? 0;
+  const todaySubmitted = new Set((todayMissions ?? []).map((m) => m.member_id))
+    .size;
+
+  const bucketCounts = BUCKETS.map(() => 0);
+  for (const member of members ?? []) {
+    const rate = (monthCountByMember.get(member.id) ?? 0) / daysElapsed;
+    const idx = BUCKETS.findIndex((b) => b.test(rate));
+    bucketCounts[idx]++;
+  }
+
+  const aiScoreCounts = [0, 0, 0];
+  for (const m of monthMissions ?? []) {
+    if (m.ai_score === 0 || m.ai_score === 1 || m.ai_score === 2) {
+      aiScoreCounts[m.ai_score]++;
+    }
+  }
+  const aiScoredTotal = aiScoreCounts.reduce((a, b) => a + b, 0);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="text-2xl font-bold">운영 대시보드</h1>
+        <p className="mt-1 text-sm text-ink-soft">
+          {year}년 {month}월 · {daysElapsed}일차
+          기준
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <p className="text-xs font-medium text-ink-soft">전체 회원</p>
+          <p className="mt-1 text-3xl font-extrabold">{memberCount}명</p>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <p className="text-xs font-medium text-ink-soft">오늘 미션 제출</p>
+          <p className="mt-1 text-3xl font-extrabold">
+            {todaySubmitted}
+            <span className="text-base font-medium text-ink-soft">
+              /{memberCount}명
+            </span>
+          </p>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <p className="text-xs font-medium text-ink-soft">영양코치</p>
+          <p className="mt-1 text-3xl font-extrabold">
+            {coaches?.length ?? 0}명
+          </p>
+        </div>
+      </div>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold">이번 달 미션 수행률 분포</h2>
+        <p className="mb-3 text-xs text-ink-soft">
+          버핏Meals 1차 베타에서 확인된 것처럼, 미션 수행률 80% 이상 구간의
+          재등록 전환이 가장 높았어요. 그 구간의 회원 수를 계속 지켜보세요.
+        </p>
+        <div className="overflow-x-auto rounded-2xl border border-line bg-card">
+          <table className="w-full min-w-[400px] text-sm">
+            <thead>
+              <tr className="border-b border-line text-left text-ink-soft">
+                <th className="px-4 py-3 font-medium">수행률 구간</th>
+                <th className="px-4 py-3 font-medium tabular-nums">
+                  회원 수
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {BUCKETS.map((b, i) => (
+                <tr key={b.label} className="border-b border-line last:border-0">
+                  <td className="px-4 py-2.5">{b.label}</td>
+                  <td className="px-4 py-2.5 tabular-nums">
+                    {bucketCounts[i]}명
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold">이번 달 AI 식단 채점 분포</h2>
+        <p className="mb-3 text-xs text-ink-soft">
+          업로드된 식단 사진을 AI가 0~2점으로 자동 채점해요 (0점: 식사 사진
+          아님/성의 없음, 1점: 인증은 성실하나 구성 불균형, 2점: 탄단지
+          균형 잡힌 식단).
+        </p>
+        {aiScoredTotal === 0 ? (
+          <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
+            아직 채점된 식단 사진이 없어요.
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-2xl border border-line bg-card">
+            <table className="w-full min-w-[300px] text-sm">
+              <thead>
+                <tr className="border-b border-line text-left text-ink-soft">
+                  <th className="px-4 py-3 font-medium">점수</th>
+                  <th className="px-4 py-3 font-medium tabular-nums">건수</th>
+                  <th className="px-4 py-3 font-medium tabular-nums">비율</th>
+                </tr>
+              </thead>
+              <tbody>
+                {["0점 · 인증 미흡", "1점 · 성실한 인증", "2점 · 균형 잡힌 식단"].map(
+                  (label, i) => (
+                    <tr key={label} className="border-b border-line last:border-0">
+                      <td className="px-4 py-2.5">{label}</td>
+                      <td className="px-4 py-2.5 tabular-nums">
+                        {aiScoreCounts[i]}건
+                      </td>
+                      <td className="px-4 py-2.5 tabular-nums">
+                        {Math.round((aiScoreCounts[i] / aiScoredTotal) * 100)}%
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold">회원 · 영양코치 배정</h2>
+        <div className="flex flex-col gap-4">
+          <AssignCoachForm
+            members={(members ?? []).map((m) => ({
+              id: m.id,
+              name: m.name,
+              coachName: coachNameById.get(coachIdByMember.get(m.id) ?? "") ?? null,
+            }))}
+            coaches={coaches ?? []}
+          />
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {(members ?? []).map((m) => (
+              <li
+                key={m.id}
+                className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-2.5 text-sm"
+              >
+                <span>{m.name}</span>
+                <span className="text-ink-soft">
+                  {coachNameById.get(coachIdByMember.get(m.id) ?? "") ??
+                    "미배정"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </div>
+  );
+}
