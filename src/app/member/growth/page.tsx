@@ -19,7 +19,7 @@ export default async function GrowthPage() {
     return (
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-2xl font-bold">성장</h1>
+          <h1 className="text-2xl font-bold">내 변화</h1>
           <p className="mt-1 text-sm text-ink-soft">
             체중/체지방률 변화를 그래프로 확인해요.
           </p>
@@ -61,10 +61,9 @@ export default async function GrowthPage() {
         </p>
       </div>
 
-      {points.length < 2 ? (
+      {points.length < 1 ? (
         <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
-          홈에서 오늘의 {goalUnitLabel[goal.unit]}를 며칠 더 기록하면 그래프가
-          나타나요.
+          홈에서 오늘의 {goalUnitLabel[goal.unit]}를 기록하면 그래프가 나타나요.
         </p>
       ) : (
         <GrowthChart
