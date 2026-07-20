@@ -25,7 +25,7 @@ export default function Home() {
         <h1 className="mt-6 text-balance text-3xl font-extrabold leading-tight sm:text-5xl">
           뚜렷한 목표를 세우고,
           <br />
-          매일의 실천을 <span className="text-carrot">당근</span>으로 쌓아요
+          매일 <span className="text-carrot">당근</span>을 쌓아보세요
         </h1>
         <p className="mt-5 max-w-xl text-balance text-ink-soft">
           체성분 목표를 정하고, 매일 식단을 기록하면 당근이 쌓입니다. 담당
