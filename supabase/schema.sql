@@ -24,6 +24,8 @@ create table profiles (
   role user_role not null default 'member',
   name text not null unique,
   class_id uuid references classes (id) on delete set null,
+  bio text,
+  tags text[] not null default '{}',
   created_at timestamptz not null default now()
 );
 

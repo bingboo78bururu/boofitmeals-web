@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { FeedbackForm } from "./feedback-form";
 import { ScoreOverride } from "./score-override";
+import { ProfileForm } from "./profile-form";
 import { mealLabel } from "@/lib/roles";
 import { finalScore } from "@/lib/score";
 import type { MealType } from "@/lib/supabase/types";
@@ -67,6 +68,14 @@ export default async function CoachPage() {
           남겨주세요.
         </p>
       </div>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold">내 프로필</h2>
+        <p className="mb-3 text-xs text-ink-soft">
+          회원가입 시 코치 선택 화면에 표시되는 소개글과 해시태그예요.
+        </p>
+        <ProfileForm bio={profile.bio} tags={profile.tags} />
+      </section>
 
       {(!missions || missions.length === 0) && (
         <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">

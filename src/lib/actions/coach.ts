@@ -63,3 +63,31 @@ export async function overrideScore(
   revalidatePath("/admin");
   return { success: true };
 }
+
+export async function updateCoachProfile(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  const profile = await requireRole("coach");
+
+  const bio = String(formData.get("bio") ?? "").trim();
+  const tagsRaw = String(formData.get("tags") ?? "").trim();
+  const tags = tagsRaw
+    ? tagsRaw
+        .split(/[,、，#]/)
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : [];
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ bio: bio || null, tags })
+    .eq("id", profile.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/coach");
+  revalidatePath("/signup/coach");
+  return { success: true };
+}

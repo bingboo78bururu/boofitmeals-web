@@ -11,6 +11,8 @@ export interface Database {
           role: UserRole;
           name: string;
           class_id: string | null;
+          bio: string | null;
+          tags: string[];
           created_at: string;
         };
         Insert: {
@@ -18,6 +20,8 @@ export interface Database {
           role?: UserRole;
           name: string;
           class_id?: string | null;
+          bio?: string | null;
+          tags?: string[];
           created_at?: string;
         };
         Update: {
@@ -25,6 +29,8 @@ export interface Database {
           role?: UserRole;
           name?: string;
           class_id?: string | null;
+          bio?: string | null;
+          tags?: string[];
           created_at?: string;
         };
         Relationships: [];
