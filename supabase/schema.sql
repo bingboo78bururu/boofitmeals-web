@@ -384,3 +384,22 @@ create policy "feedback update by author"
   to authenticated
   using (coach_id = auth.uid())
   with check (coach_id = auth.uid());
+
+create policy "feedback update by assigned coach"
+  on feedback for update
+  to authenticated
+  using (
+    exists (
+      select 1 from missions m
+      join coach_assignments ca on ca.member_id = m.member_id
+      where m.id = feedback.mission_id and ca.coach_id = auth.uid()
+    )
+  )
+  with check (
+    coach_id = auth.uid()
+    and exists (
+      select 1 from missions m
+      join coach_assignments ca on ca.member_id = m.member_id
+      where m.id = feedback.mission_id and ca.coach_id = auth.uid()
+    )
+  );

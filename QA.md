@@ -42,5 +42,6 @@
 | 36 | 체지방률 새로 입력해도 상단바 텍스트가 갱신 안 되는 버그 (중요도 상) | finished | 원인: 상단바·마이페이지 목표의 "현재" 값이 `goals.current_value`(가입 시 스냅샷)만 보고 있었음. 홈에서 기록한 `body_logs`의 가장 최근 값을 우선하도록 수정 |
 | 37 | 목표 단위에 근육량 추가 (중요도 중) | finished | `goal_unit`에 `muscle_mass_kg` 추가, `body_logs`에도 근육량 컬럼 추가. 홈 오늘의 기록 입력칸도 3개(체중/체지방률/근육량)로 확장 |
 | 38 | 상단바 계속 floating 고정 (중요도 하) | finished | 헤더+목표 공지 바를 `sticky top-0`으로 묶어서 스크롤해도 상단에 고정 |
+| 39 | 트레이너 피드백 입력 시 "new row violates row-level security policy (USING expression) for table feedback" 에러 (중요도 상) | finished | 원인: 피드백 UPDATE 권한이 원작성 코치 본인으로만 제한돼 있어서, 담당 코치가 바뀌었거나 다른 코치 계정이면 기존 피드백을 못 고침. 현재 담당 코치면 이전 작성자와 무관하게 수정 가능하도록 정책 추가 |
 
 > 새 QA 요청 주시면 이 표에 to go로 추가하고, 진행 상태 바뀔 때마다 업데이트할게요.
