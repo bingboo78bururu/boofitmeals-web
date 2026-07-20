@@ -152,5 +152,8 @@ day for Korean users.
 - `QA.md` at the repo root is the running QA/bug list, used instead of GitHub Issues. Status values are
   exactly `작성중 / to go / in progress / finished` — not the pending/in_progress/completed vocabulary used
   elsewhere. Update it whenever a QA item is addressed, and don't reword the status set.
+- In chat, the user marks individual QA asks with a `[]` prefix (e.g. `[]로그인 페이지에...`) and tags each
+  with a priority — 상 (high) / 중 (mid) / 하 (low). When a message contains several `[]` items, do the 상
+  items first, then 중, then 하 — order of appearance in the message is not the priority order.
 - UI copy is Korean throughout; keep new user-facing strings consistent with that (and with existing tone —
   casual-polite, emoji used sparingly for carrots/AI badges).
