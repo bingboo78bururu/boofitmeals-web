@@ -16,7 +16,10 @@ export default async function MyPage() {
         .select("unit, current_value, target_value, target_date")
         .eq("member_id", profile.id)
         .maybeSingle(),
-      supabase.from("profiles").select("id, name").eq("role", "coach"),
+      supabase
+        .from("profiles")
+        .select("id, name, bio, tags, photo_url")
+        .eq("role", "coach"),
       supabase
         .from("coach_assignments")
         .select("coach_id")

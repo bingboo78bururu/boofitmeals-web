@@ -81,7 +81,15 @@ export async function updateCoachProfile(
 
   const supabase = await createClient();
 
-  let photoUrl: string | undefined;
+  // 소개글/해시태그는 사진 업로드 성공 여부와 무관하게 먼저 저장한다 —
+  // 이래야 사진 업로드가 실패해도 같이 입력한 텍스트가 날아가지 않는다.
+  const { error } = await supabase
+    .from("profiles")
+    .update({ bio: bio || null, tags })
+    .eq("id", profile.id);
+
+  if (error) return { error: error.message };
+
   const photo = formData.get("photo");
   if (photo instanceof File && photo.size > 0) {
     if (photo.size > 4 * 1024 * 1024) {
@@ -98,21 +106,15 @@ export async function updateCoachProfile(
 
     if (uploadError) return { error: uploadError.message };
 
-    photoUrl = `${supabase.storage.from("profile-photos").getPublicUrl(path).data.publicUrl}?t=${Date.now()}`;
+    const photoUrl = `${supabase.storage.from("profile-photos").getPublicUrl(path).data.publicUrl}?t=${Date.now()}`;
+    const { error: photoError } = await supabase
+      .from("profiles")
+      .update({ photo_url: photoUrl })
+      .eq("id", profile.id);
+    if (photoError) return { error: photoError.message };
   }
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      bio: bio || null,
-      tags,
-      ...(photoUrl ? { photo_url: photoUrl } : {}),
-    })
-    .eq("id", profile.id);
-
-  if (error) return { error: error.message };
-
   revalidatePath("/coach");
-  revalidatePath("/signup/coach");
+  revalidatePath("/member/mypage");
   return { success: true };
 }

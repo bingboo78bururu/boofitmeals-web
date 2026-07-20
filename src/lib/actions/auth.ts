@@ -66,7 +66,7 @@ export async function signup(
   }
 
   revalidatePath("/", "layout");
-  redirect(role === "member" ? "/signup/coach" : (roleHome[role] ?? "/member"));
+  redirect(role === "member" ? "/signup/goal" : (roleHome[role] ?? "/member"));
 }
 
 export async function login(

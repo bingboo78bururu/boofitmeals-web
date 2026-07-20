@@ -16,14 +16,22 @@ const UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg", "muscle_mass_kg"];
 
 export function GoalForm({ initial }: { initial: Goal | null }) {
   const [state, action, pending] = useActionState(saveGoal, undefined);
-  const [editing, setEditing] = useState(!initial);
+  // 온보딩에서 목표 단위만 미리 선택해둔 "빈 목표"일 수 있으므로, 실제로
+  // 현재/목표 수치·목표일이 다 채워져 있을 때만 뷰 모드를 기본값으로 삼는다.
+  const hasCompleteGoal = !!(
+    initial &&
+    initial.current_value !== null &&
+    initial.target_value !== null &&
+    initial.target_date !== null
+  );
+  const [editing, setEditing] = useState(!hasCompleteGoal);
   const [unit, setUnit] = useState<GoalUnit>(initial?.unit ?? "body_fat_pct");
 
   useEffect(() => {
     if (state && "success" in state) setEditing(false);
   }, [state]);
 
-  if (!editing && initial) {
+  if (!editing && hasCompleteGoal && initial) {
     const suffix = goalUnitSuffix[initial.unit];
     return (
       <div className="flex flex-col gap-2 rounded-2xl border border-line bg-card p-5">
@@ -140,7 +148,7 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
         >
           {pending ? "저장 중..." : "목표 저장"}
         </button>
-        {initial && (
+        {hasCompleteGoal && (
           <button
             type="button"
             onClick={() => setEditing(false)}
