@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { scoreMissionPhoto } from "@/lib/ai-score";
 import { todayString } from "@/lib/dates";
+import { BODY_LOG_FIELD_BY_UNIT } from "@/lib/goal";
 import type { GoalUnit, MealType } from "@/lib/supabase/types";
 
 const MEAL_TYPES: MealType[] = ["breakfast", "lunch", "dinner"];
@@ -50,8 +51,25 @@ export async function saveGoal(
 
   if (error) return { error: error.message };
 
+  // 목표의 "현재" 수치도 성장 그래프에 오늘 기록으로 남긴다.
+  const field = BODY_LOG_FIELD_BY_UNIT[unit];
+  const logPayload: {
+    member_id: string;
+    log_date: string;
+    weight_kg?: number;
+    body_fat_pct?: number;
+    muscle_mass_kg?: number;
+  } = { member_id: profile.id, log_date: todayString() };
+  logPayload[field] = currentValue;
+
+  const { error: logError } = await supabase
+    .from("body_logs")
+    .upsert(logPayload, { onConflict: "member_id,log_date" });
+  if (logError) return { error: logError.message };
+
   revalidatePath("/member");
   revalidatePath("/member/mypage");
+  revalidatePath("/member/growth");
   return { success: true };
 }
 

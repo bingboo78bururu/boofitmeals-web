@@ -89,8 +89,8 @@ export function GrowthChart({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        preserveAspectRatio="none"
-        className="h-56 w-full touch-none"
+        className="w-full touch-none"
+        style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
         onPointerMove={handlePointerMove}
         onPointerLeave={() => setHoverIndex(null)}
       >
