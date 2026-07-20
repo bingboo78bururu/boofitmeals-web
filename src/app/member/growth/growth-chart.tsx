@@ -6,11 +6,17 @@ import type { GoalUnit } from "@/lib/supabase/types";
 
 type Point = { date: string; value: number };
 
-const WIDTH = 600;
+const MAX_WIDTH = 600;
 const HEIGHT = 220;
-const PAD_X = 12;
-const PAD_TOP = 28;
-const PAD_BOTTOM = 28;
+const PAD_X = 16;
+const PAD_TOP = 32;
+const PAD_BOTTOM = 32;
+
+// 점이 적을수록 가로 폭을 좁혀서(=확대해서) 보여준다 — 안 그러면 데이터가
+// 거의 없을 때 카드 전체 너비에 점 하나만 덩그러니 떠서 숫자가 작아 보임.
+function widthFor(pointCount: number) {
+  return Math.min(MAX_WIDTH, Math.max(220, 100 + pointCount * 90));
+}
 
 function formatDate(date: string) {
   return `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}`;
@@ -30,6 +36,7 @@ export function GrowthChart({
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
+  const WIDTH = widthFor(points.length);
   const values = points.map((p) => p.value);
   const times = points.map((p) => new Date(`${p.date}T00:00:00Z`).getTime());
   const minTime = Math.min(...times);
@@ -89,8 +96,8 @@ export function GrowthChart({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        className="w-full touch-none"
-        style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
+        className="mx-auto w-full touch-none"
+        style={{ aspectRatio: `${WIDTH} / ${HEIGHT}`, maxWidth: WIDTH * 1.8 }}
         onPointerMove={handlePointerMove}
         onPointerLeave={() => setHoverIndex(null)}
       >
@@ -107,10 +114,10 @@ export function GrowthChart({
         />
         <text
           x={WIDTH - PAD_X}
-          y={targetY - 6}
+          y={targetY - 8}
           textAnchor="end"
           className="fill-ink-soft"
-          fontSize={11}
+          fontSize={15}
         >
           목표 {target}
           {suffix}
@@ -145,7 +152,7 @@ export function GrowthChart({
             key={p.date}
             cx={x(times[i])}
             cy={y(p.value)}
-            r={hoverIndex === i ? 6 : 4}
+            r={hoverIndex === i ? 7 : 5}
             fill="var(--color-carrot)"
             stroke="var(--color-card)"
             strokeWidth={2}
@@ -155,11 +162,11 @@ export function GrowthChart({
         {/* 끝점 라벨 */}
         <text
           x={x(times[times.length - 1])}
-          y={y(last.value) - 12}
+          y={y(last.value) - 14}
           textAnchor="end"
           className="fill-carrot-dark"
-          fontSize={11}
-          fontWeight={600}
+          fontSize={16}
+          fontWeight={700}
         >
           {last.value}
           {suffix}

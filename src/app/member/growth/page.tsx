@@ -55,7 +55,7 @@ export default async function GrowthPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold">성장</h1>
+        <h1 className="text-2xl font-bold">내 변화</h1>
         <p className="mt-1 text-sm text-ink-soft">
           {goalUnitLabel[goal.unit]} 변화를 목표선과 함께 확인해요.
         </p>
