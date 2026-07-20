@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
 import { BODY_LOG_FIELD_BY_UNIT } from "@/lib/goal";
+import { todayString } from "@/lib/dates";
 import { GrowthChart } from "./growth-chart";
 
 export default async function GrowthPage() {
@@ -38,13 +39,21 @@ export default async function GrowthPage() {
   }
 
   const field = BODY_LOG_FIELD_BY_UNIT[goal.unit];
-  const { data: logs } = await supabase
-    .from("body_logs")
-    .select(`log_date, ${field}`)
-    .eq("member_id", profile.id)
-    .not(field, "is", null)
-    .order("log_date", { ascending: true })
-    .limit(30);
+  const [{ data: logs }, { data: todayLog }] = await Promise.all([
+    supabase
+      .from("body_logs")
+      .select(`log_date, ${field}`)
+      .eq("member_id", profile.id)
+      .not(field, "is", null)
+      .order("log_date", { ascending: true })
+      .limit(30),
+    supabase
+      .from("body_logs")
+      .select("weight_kg, body_fat_pct, muscle_mass_kg")
+      .eq("member_id", profile.id)
+      .eq("log_date", todayString())
+      .maybeSingle(),
+  ]);
 
   const points = ((logs ?? []) as unknown as Record<string, string | number | null>[])
     .map((row) => ({
@@ -61,18 +70,13 @@ export default async function GrowthPage() {
         </p>
       </div>
 
-      {points.length < 1 ? (
-        <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
-          홈에서 오늘의 {goalUnitLabel[goal.unit]}를 기록하면 그래프가 나타나요.
-        </p>
-      ) : (
-        <GrowthChart
-          points={points}
-          target={goal.target_value}
-          unit={goal.unit}
-          suffix={goalUnitSuffix[goal.unit]}
-        />
-      )}
+      <GrowthChart
+        points={points}
+        target={goal.target_value}
+        unit={goal.unit}
+        suffix={goalUnitSuffix[goal.unit]}
+        existingLog={todayLog ?? null}
+      />
     </div>
   );
 }

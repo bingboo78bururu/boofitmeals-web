@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { logBody } from "@/lib/actions/member";
 
 type BodyLog = {
@@ -9,47 +9,20 @@ type BodyLog = {
   muscle_mass_kg: number | null;
 };
 
-export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
+export function BodyLogForm({
+  existing,
+  onSaved,
+  onCancel,
+}: {
+  existing: BodyLog | null;
+  onSaved?: () => void;
+  onCancel?: () => void;
+}) {
   const [state, action, pending] = useActionState(logBody, undefined);
-  const [editing, setEditing] = useState(!existing);
 
   useEffect(() => {
-    if (state && "success" in state) setEditing(false);
-  }, [state]);
-
-  if (!editing && existing) {
-    return (
-      <div className="flex items-center justify-between rounded-2xl border border-line bg-card p-5">
-        <div className="flex gap-6 text-sm">
-          {existing.weight_kg !== null && (
-            <div>
-              <p className="text-xs text-ink-soft">체중</p>
-              <p className="font-bold">{existing.weight_kg}kg</p>
-            </div>
-          )}
-          {existing.body_fat_pct !== null && (
-            <div>
-              <p className="text-xs text-ink-soft">체지방률</p>
-              <p className="font-bold">{existing.body_fat_pct}%</p>
-            </div>
-          )}
-          {existing.muscle_mass_kg !== null && (
-            <div>
-              <p className="text-xs text-ink-soft">근육량</p>
-              <p className="font-bold">{existing.muscle_mass_kg}kg</p>
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="text-xs font-medium text-ink-soft hover:text-carrot"
-        >
-          수정하기
-        </button>
-      </div>
-    );
-  }
+    if (state && "success" in state) onSaved?.();
+  }, [state, onSaved]);
 
   return (
     <form
@@ -108,15 +81,13 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
         >
           {pending ? "저장 중..." : "오늘 기록 저장"}
         </button>
-        {existing && (
-          <button
-            type="button"
-            onClick={() => setEditing(false)}
-            className="text-sm text-ink-soft hover:text-ink"
-          >
-            취소
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-sm text-ink-soft hover:text-ink"
+        >
+          취소
+        </button>
       </div>
     </form>
   );

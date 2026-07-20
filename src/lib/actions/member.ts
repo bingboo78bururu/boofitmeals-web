@@ -114,6 +114,8 @@ export async function logBody(
   }
 
   revalidatePath("/member");
+  revalidatePath("/member/growth");
+  revalidatePath("/member/mypage");
   return { success: true };
 }
 
