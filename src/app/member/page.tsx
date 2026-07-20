@@ -8,6 +8,11 @@ import { addDays, isValidDateString, todayString } from "@/lib/dates";
 import { finalScore } from "@/lib/score";
 import type { MealType } from "@/lib/supabase/types";
 
+// 미션 인증(사진 업로드 + AI 채점 API 호출)이 기본 서버리스 함수 제한(10초)을
+// 넘기면 앱 코드까지 도달했어도 강제 종료돼 "이 페이지를 불러올 수 없음"으로
+// 보인다. 이 페이지에서 제출되는 submitMission 서버 액션에도 적용된다.
+export const maxDuration = 30;
+
 const MEALS = (Object.keys(mealLabel) as MealType[]).map((type) => ({
   type,
   label: mealLabel[type],
