@@ -90,7 +90,8 @@ export function GrowthChart({
   const hovered = hoverIndex !== null ? points[hoverIndex] : null;
 
   return (
-    <div className="rounded-2xl border border-line bg-card p-5">
+    <div className="flex flex-col gap-3">
+      <div className="rounded-2xl border border-line bg-card p-5">
       {points.length === 0 ? (
         <p className="text-sm text-ink-soft">아직 기록이 없어요.</p>
       ) : (
@@ -227,25 +228,22 @@ export function GrowthChart({
           </details>
         </>
       )}
+      </div>
 
       {showLogForm ? (
-        <div className="mt-4">
-          <BodyLogForm
-            existing={existingLog}
-            onSaved={() => setShowLogForm(false)}
-            onCancel={() => setShowLogForm(false)}
-          />
-        </div>
+        <BodyLogForm
+          existing={existingLog}
+          onSaved={() => setShowLogForm(false)}
+          onCancel={() => setShowLogForm(false)}
+        />
       ) : (
-        <div className="mt-3 flex justify-end">
-          <button
-            type="button"
-            onClick={() => setShowLogForm(true)}
-            className="text-xs font-medium text-ink-soft hover:text-carrot"
-          >
-            {points.length === 0 ? "기록하기" : "수정하기"}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowLogForm(true)}
+          className="w-full rounded-xl bg-carrot py-3 text-center text-sm font-semibold text-white hover:bg-carrot-dark"
+        >
+          오늘 수치 기록하기
+        </button>
       )}
     </div>
   );
