@@ -127,16 +127,10 @@ export default async function CoachPage() {
                 coachScore={mission.coach_score}
               />
 
-              {existingFeedback ? (
-                <div className="mt-3 rounded-xl bg-leaf/10 px-3 py-2 text-sm">
-                  <span className="font-medium text-leaf-dark">
-                    피드백 완료 ·{" "}
-                  </span>
-                  {existingFeedback}
-                </div>
-              ) : (
-                <FeedbackForm missionId={mission.id} />
-              )}
+              <FeedbackForm
+                missionId={mission.id}
+                existingFeedback={existingFeedback ?? null}
+              />
             </li>
           );
         })}

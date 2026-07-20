@@ -21,7 +21,10 @@ export async function submitFeedback(
   const supabase = await createClient();
   const { error } = await supabase
     .from("feedback")
-    .insert({ mission_id: missionId, coach_id: profile.id, content });
+    .upsert(
+      { mission_id: missionId, coach_id: profile.id, content },
+      { onConflict: "mission_id" }
+    );
 
   if (error) return { error: error.message };
 

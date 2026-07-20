@@ -275,3 +275,9 @@ create policy "feedback insert by assigned coach"
       where m.id = feedback.mission_id and ca.coach_id = auth.uid()
     )
   );
+
+create policy "feedback update by author"
+  on feedback for update
+  to authenticated
+  using (coach_id = auth.uid())
+  with check (coach_id = auth.uid());
