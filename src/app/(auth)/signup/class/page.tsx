@@ -14,7 +14,12 @@ export default async function SignupClassPage() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6 py-16">
-      <p className="mb-1 text-sm text-ink-soft">3 / 3</p>
+      <Link
+        href="/signup/goal"
+        className="mb-1 flex items-center gap-1 text-sm text-ink-soft hover:text-carrot"
+      >
+        ← 3 / 3
+      </Link>
       <h1 className="text-2xl font-bold">클래스를 선택해주세요</h1>
       <p className="mt-2 text-sm text-ink-soft">
         같은 클래스끼리 랭킹보드에서 함께 경쟁해요.
@@ -29,13 +34,6 @@ export default async function SignupClassPage() {
           </p>
         )}
       </div>
-
-      <Link
-        href="/member"
-        className="mt-4 text-center text-sm text-ink-soft hover:text-carrot"
-      >
-        나중에 선택할게요 →
-      </Link>
     </div>
   );
 }
