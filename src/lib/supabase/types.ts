@@ -1,6 +1,6 @@
 export type UserRole = "member" | "coach" | "admin";
 export type MealType = "breakfast" | "lunch" | "dinner";
-export type GoalUnit = "body_fat_pct" | "weight_kg";
+export type GoalUnit = "body_fat_pct" | "weight_kg" | "muscle_mass_kg";
 
 export interface Database {
   public: {
@@ -84,6 +84,7 @@ export interface Database {
           log_date: string;
           weight_kg: number | null;
           body_fat_pct: number | null;
+          muscle_mass_kg: number | null;
           created_at: string;
         };
         Insert: {
@@ -92,6 +93,7 @@ export interface Database {
           log_date: string;
           weight_kg?: number | null;
           body_fat_pct?: number | null;
+          muscle_mass_kg?: number | null;
           created_at?: string;
         };
         Update: {
@@ -100,6 +102,7 @@ export interface Database {
           log_date?: string;
           weight_kg?: number | null;
           body_fat_pct?: number | null;
+          muscle_mass_kg?: number | null;
           created_at?: string;
         };
         Relationships: [];

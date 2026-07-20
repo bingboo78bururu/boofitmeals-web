@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { latestBodyLogValue } from "@/lib/goal";
 import { GoalForm } from "../goal-form";
 import { CoachSettingsForm } from "./coach-settings-form";
 import { ClassSettingsForm } from "./class-settings-form";
@@ -24,6 +25,13 @@ export default async function MyPage() {
       supabase.from("classes").select("id, name").order("name"),
     ]);
 
+  const goalWithLatest = goal
+    ? {
+        ...goal,
+        current_value: (await latestBodyLogValue(profile.id, goal.unit)) ?? goal.current_value,
+      }
+    : null;
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -35,7 +43,7 @@ export default async function MyPage() {
 
       <section>
         <h2 className="mb-3 text-lg font-bold">목표</h2>
-        <GoalForm initial={goal ?? null} />
+        <GoalForm initial={goalWithLatest} />
       </section>
 
       <section>

@@ -6,6 +6,7 @@ import { logBody } from "@/lib/actions/member";
 type BodyLog = {
   weight_kg: number | null;
   body_fat_pct: number | null;
+  muscle_mass_kg: number | null;
 };
 
 export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
@@ -32,6 +33,12 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
               <p className="font-bold">{existing.body_fat_pct}%</p>
             </div>
           )}
+          {existing.muscle_mass_kg !== null && (
+            <div>
+              <p className="text-xs text-ink-soft">근육량</p>
+              <p className="font-bold">{existing.muscle_mass_kg}kg</p>
+            </div>
+          )}
         </div>
         <button
           type="button"
@@ -47,7 +54,7 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
   return (
     <form
       action={action}
-      className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-end"
+      className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-end sm:flex-wrap"
     >
       <div className="flex flex-1 flex-col gap-1.5">
         <label htmlFor="weight_kg" className="text-sm font-medium">
@@ -72,6 +79,19 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
           type="number"
           step="0.1"
           defaultValue={existing?.body_fat_pct ?? undefined}
+          className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+        />
+      </div>
+      <div className="flex flex-1 flex-col gap-1.5">
+        <label htmlFor="muscle_mass_kg" className="text-sm font-medium">
+          근육량 (kg)
+        </label>
+        <input
+          id="muscle_mass_kg"
+          name="muscle_mass_kg"
+          type="number"
+          step="0.1"
+          defaultValue={existing?.muscle_mass_kg ?? undefined}
           className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
         />
       </div>

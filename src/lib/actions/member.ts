@@ -8,7 +8,7 @@ import { todayString } from "@/lib/dates";
 import type { GoalUnit, MealType } from "@/lib/supabase/types";
 
 const MEAL_TYPES: MealType[] = ["breakfast", "lunch", "dinner"];
-const GOAL_UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg"];
+const GOAL_UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg", "muscle_mass_kg"];
 
 export type SimpleFormState = { error: string } | { success: true } | undefined;
 export type MissionFormState =
@@ -63,11 +63,13 @@ export async function logBody(
 
   const weightRaw = String(formData.get("weight_kg") ?? "").trim();
   const bodyFatRaw = String(formData.get("body_fat_pct") ?? "").trim();
+  const muscleMassRaw = String(formData.get("muscle_mass_kg") ?? "").trim();
   const weightKg = weightRaw ? Number(weightRaw) : null;
   const bodyFatPct = bodyFatRaw ? Number(bodyFatRaw) : null;
+  const muscleMassKg = muscleMassRaw ? Number(muscleMassRaw) : null;
 
-  if (weightKg === null && bodyFatPct === null) {
-    return { error: "체중 또는 체지방률 중 하나는 입력해주세요." };
+  if (weightKg === null && bodyFatPct === null && muscleMassKg === null) {
+    return { error: "체중, 체지방률, 근육량 중 하나는 입력해주세요." };
   }
 
   const supabase = await createClient();
@@ -77,6 +79,7 @@ export async function logBody(
       log_date: todayString(),
       weight_kg: weightKg,
       body_fat_pct: bodyFatPct,
+      muscle_mass_kg: muscleMassKg,
     },
     { onConflict: "member_id,log_date" }
   );

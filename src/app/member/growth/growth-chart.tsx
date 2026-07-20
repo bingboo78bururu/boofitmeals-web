@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { goalUnitLabel } from "@/lib/roles";
 import type { GoalUnit } from "@/lib/supabase/types";
 
 type Point = { date: string; value: number };
@@ -186,7 +187,7 @@ export function GrowthChart({
               <tr className="border-b border-line text-left text-ink-soft">
                 <th className="py-1.5 pr-4 font-medium">날짜</th>
                 <th className="py-1.5 font-medium tabular-nums">
-                  {unit === "weight_kg" ? "체중" : "체지방률"}
+                  {goalUnitLabel[unit]}
                 </th>
               </tr>
             </thead>

@@ -12,7 +12,7 @@ type Goal = {
   target_date: string | null;
 };
 
-const UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg"];
+const UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg", "muscle_mass_kg"];
 
 export function GoalForm({ initial }: { initial: Goal | null }) {
   const [state, action, pending] = useActionState(saveGoal, undefined);

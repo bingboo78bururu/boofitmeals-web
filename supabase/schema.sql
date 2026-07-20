@@ -9,8 +9,8 @@ create type user_role as enum ('member', 'coach', 'admin');
 -- 하루 세 끼 인증: 아침 / 점심 / 저녁
 create type meal_type as enum ('breakfast', 'lunch', 'dinner');
 
--- 목표 단위: 체지방률 / 체중
-create type goal_unit as enum ('body_fat_pct', 'weight_kg');
+-- 목표 단위: 체지방률 / 체중 / 근육량
+create type goal_unit as enum ('body_fat_pct', 'weight_kg', 'muscle_mass_kg');
 
 -- 클래스: 같은 클래스끼리 랭킹보드가 묶임
 create table classes (
@@ -37,13 +37,14 @@ create table goals (
   updated_at timestamptz not null default now()
 );
 
--- 오늘의 체중/체지방률 기록 (하루 하나, 그래프용 시계열)
+-- 오늘의 체중/체지방률/근육량 기록 (하루 하나, 그래프용 시계열)
 create table body_logs (
   id uuid primary key default gen_random_uuid(),
   member_id uuid not null references profiles (id) on delete cascade,
   log_date date not null,
   weight_kg numeric,
   body_fat_pct numeric,
+  muscle_mass_kg numeric,
   created_at timestamptz not null default now(),
   unique (member_id, log_date)
 );

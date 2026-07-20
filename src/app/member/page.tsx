@@ -120,7 +120,7 @@ export default async function MemberPage({
         .eq("member_id", profile.id),
       supabase
         .from("body_logs")
-        .select("weight_kg, body_fat_pct")
+        .select("weight_kg, body_fat_pct, muscle_mass_kg")
         .eq("member_id", profile.id)
         .eq("log_date", today)
         .maybeSingle(),

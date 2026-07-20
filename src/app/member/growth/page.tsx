@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
+import { BODY_LOG_FIELD_BY_UNIT } from "@/lib/goal";
 import { GrowthChart } from "./growth-chart";
 
 export default async function GrowthPage() {
@@ -36,7 +37,7 @@ export default async function GrowthPage() {
     );
   }
 
-  const field = goal.unit === "weight_kg" ? "weight_kg" : "body_fat_pct";
+  const field = BODY_LOG_FIELD_BY_UNIT[goal.unit];
   const { data: logs } = await supabase
     .from("body_logs")
     .select(`log_date, ${field}`)
