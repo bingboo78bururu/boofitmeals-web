@@ -97,25 +97,21 @@ export async function logBody(
   }
 
   const supabase = await createClient();
-  const { error, data } = await supabase
-    .from("body_logs")
-    .upsert(
-      {
-        member_id: profile.id,
-        log_date: todayString(),
-        weight_kg: weightKg,
-        body_fat_pct: bodyFatPct,
-        muscle_mass_kg: muscleMassKg,
-      },
-      { onConflict: "member_id,log_date" }
-    )
-    .select();
+  const { error } = await supabase.from("body_logs").upsert(
+    {
+      member_id: profile.id,
+      log_date: todayString(),
+      weight_kg: weightKg,
+      body_fat_pct: bodyFatPct,
+      muscle_mass_kg: muscleMassKg,
+    },
+    { onConflict: "member_id,log_date" }
+  );
 
   if (error) {
     console.error("[logBody] upsert failed", error);
     return { error: error.message };
   }
-  console.error("[logBody] upsert result", JSON.stringify(data));
 
   revalidatePath("/member");
   return { success: true };
