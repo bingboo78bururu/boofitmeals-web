@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { GoalForm } from "./goal-form";
 import { MissionForm } from "./mission-form";
 import { DateLinkContent } from "./date-link-content";
 import { mealLabel } from "@/lib/roles";
@@ -105,13 +104,8 @@ export default async function MemberPage({
 
   const isToday = selectedDate === today;
 
-  const [{ data: goal }, { data: selectedMissions }, { data: allMissionScores }] =
+  const [{ data: selectedMissions }, { data: allMissionScores }] =
     await Promise.all([
-      supabase
-        .from("goals")
-        .select("current_body_fat, target_body_fat, target_date")
-        .eq("member_id", profile.id)
-        .maybeSingle(),
       supabase
         .from("missions")
         .select(
@@ -162,11 +156,6 @@ export default async function MemberPage({
           </p>
         </div>
       </div>
-
-      <section>
-        <h2 className="mb-3 text-lg font-bold">목표</h2>
-        <GoalForm initial={goal ?? null} />
-      </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between">

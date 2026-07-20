@@ -1,10 +1,19 @@
 import { requireRole } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell";
+import {
+  CalendarIcon,
+  FeedIcon,
+  HomeIcon,
+  MyPageIcon,
+  RankingIcon,
+} from "@/components/icons";
 
-const links = [
-  { href: "/member", label: "오늘의 미션" },
-  { href: "/member/calendar", label: "당근 캘린더" },
-  { href: "/member/ranking", label: "랭킹보드" },
+const bottomNav = [
+  { href: "/member/feed", label: "피드", icon: <FeedIcon /> },
+  { href: "/member/ranking", label: "랭킹보드", icon: <RankingIcon /> },
+  { href: "/member", label: "홈", icon: <HomeIcon /> },
+  { href: "/member/calendar", label: "당근캘린더", icon: <CalendarIcon /> },
+  { href: "/member/mypage", label: "마이페이지", icon: <MyPageIcon /> },
 ];
 
 export default async function MemberLayout({
@@ -15,7 +24,7 @@ export default async function MemberLayout({
   const profile = await requireRole("member");
 
   return (
-    <AppShell role="member" name={profile.name} links={links}>
+    <AppShell role="member" name={profile.name} links={[]} bottomNav={bottomNav}>
       {children}
     </AppShell>
   );

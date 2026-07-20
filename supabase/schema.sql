@@ -105,6 +105,16 @@ $$;
 
 grant execute on function public.name_taken(text) to anon, authenticated;
 
+-- 내 클래스를 안전하게 조회하는 헬퍼 (RLS 정책에서 재사용)
+create function public.my_class_id()
+returns uuid
+language sql
+security definer set search_path = public
+stable
+as $$
+  select class_id from public.profiles where id = auth.uid();
+$$;
+
 -- 회원은 note/photo/ai_score만, 담당 코치는 coach_score만 수정 가능하도록 컬럼 단위로 제한
 create function public.enforce_mission_update_columns()
 returns trigger
@@ -240,7 +250,7 @@ create policy "assignments delete by admin"
   to authenticated
   using (public.my_role() = 'admin');
 
--- missions: 본인, 담당 영양코치, 운영자만 조회. 작성은 본인만.
+-- missions: 본인, 담당 영양코치, 운영자, 같은 클래스 동료만 조회. 작성은 본인만.
 create policy "missions select"
   on missions for select
   to authenticated
@@ -250,6 +260,17 @@ create policy "missions select"
     or exists (
       select 1 from coach_assignments ca
       where ca.member_id = missions.member_id and ca.coach_id = auth.uid()
+    )
+  );
+
+create policy "missions select by classmate"
+  on missions for select
+  to authenticated
+  using (
+    public.my_class_id() is not null
+    and exists (
+      select 1 from profiles p
+      where p.id = missions.member_id and p.class_id = public.my_class_id()
     )
   );
 
@@ -290,6 +311,14 @@ create policy "feedback select"
     or exists (
       select 1 from missions m
       where m.id = feedback.mission_id and m.member_id = auth.uid()
+    )
+    or (
+      public.my_class_id() is not null
+      and exists (
+        select 1 from missions m
+        join profiles p on p.id = m.member_id
+        where m.id = feedback.mission_id and p.class_id = public.my_class_id()
+      )
     )
   );
 

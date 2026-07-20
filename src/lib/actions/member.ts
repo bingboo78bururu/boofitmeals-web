@@ -43,7 +43,53 @@ export async function saveGoal(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/member");
+  revalidatePath("/member/mypage");
+  return { success: true };
+}
+
+export async function updateCoach(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  const profile = await requireRole("member");
+
+  const coachId = String(formData.get("coach_id") ?? "");
+  if (!coachId) return { error: "코치를 선택해주세요." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("coach_assignments")
+    .upsert({ member_id: profile.id, coach_id: coachId }, { onConflict: "member_id" });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/member/mypage");
+  revalidatePath("/coach");
+  revalidatePath("/admin");
+  return { success: true };
+}
+
+export async function updateClass(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  const profile = await requireRole("member");
+
+  const classId = String(formData.get("class_id") ?? "");
+  if (!classId) return { error: "클래스를 선택해주세요." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ class_id: classId })
+    .eq("id", profile.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/member/mypage");
+  revalidatePath("/member/ranking");
+  revalidatePath("/member/feed");
+  revalidatePath("/admin");
   return { success: true };
 }
 
