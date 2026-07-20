@@ -25,15 +25,15 @@ export default async function GrowthPage() {
             체중/체지방률 변화를 그래프로 확인해요.
           </p>
         </div>
-        <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
-          아직 목표가 설정되지 않았어요.{" "}
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
+          <span>아직 목표가 설정되지 않았어요.</span>
           <Link
             href="/member/mypage"
-            className="font-medium text-carrot-dark hover:underline"
+            className="shrink-0 font-medium text-carrot-dark hover:underline"
           >
             설정하기 {">"}
           </Link>
-        </p>
+        </div>
       </div>
     );
   }

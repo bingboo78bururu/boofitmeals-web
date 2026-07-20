@@ -12,12 +12,16 @@ type Goal = {
   target_date: string | null;
 };
 
-const UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg", "muscle_mass_kg"];
-
-export function GoalForm({ initial }: { initial: Goal | null }) {
+export function GoalForm({
+  initial,
+  unit,
+}: {
+  initial: Goal | null;
+  unit: GoalUnit;
+}) {
   const [state, action, pending] = useActionState(saveGoal, undefined);
-  // 온보딩에서 목표 단위만 미리 선택해둔 "빈 목표"일 수 있으므로, 실제로
-  // 현재/목표 수치·목표일이 다 채워져 있을 때만 뷰 모드를 기본값으로 삼는다.
+  // 온보딩/식단 목적 선택에서 목표 단위만 미리 정해둔 "빈 목표"일 수 있으므로,
+  // 실제로 현재/목표 수치·목표일이 다 채워져 있을 때만 뷰 모드를 기본값으로 삼는다.
   const hasCompleteGoal = !!(
     initial &&
     initial.current_value !== null &&
@@ -25,7 +29,6 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
     initial.target_date !== null
   );
   const [editing, setEditing] = useState(!hasCompleteGoal);
-  const [unit, setUnit] = useState<GoalUnit>(initial?.unit ?? "body_fat_pct");
 
   useEffect(() => {
     if (state && "success" in state) setEditing(false);
@@ -71,26 +74,7 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
       action={action}
       className="flex flex-col gap-4 rounded-2xl border border-line bg-card p-5"
     >
-      <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium">목표 단위</span>
-        <div className="flex gap-2">
-          {UNITS.map((u) => (
-            <label
-              key={u}
-              className="flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border border-line px-3 py-2 text-xs has-[:checked]:border-carrot has-[:checked]:bg-carrot-light/20"
-            >
-              <input
-                type="radio"
-                name="unit"
-                value={u}
-                checked={unit === u}
-                onChange={() => setUnit(u)}
-              />
-              {goalUnitLabel[u]}
-            </label>
-          ))}
-        </div>
-      </div>
+      <input type="hidden" name="unit" value={unit} />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="flex min-w-0 flex-col gap-1.5">

@@ -127,11 +127,16 @@ policies when touching data access, not just server-action-level `requireRole` c
 
 ### Domain model
 
-`profiles` (role, `name` — unique, labeled "닉네임" in the UI, `class_id`) · `classes` (ranking is scoped to
-the viewer's class, not global) · `coach_assignments` (member ↔ coach, settable either by the member during
-onboarding or by an admin) · `goals` · `missions` (`meal_type`: breakfast/lunch/dinner, one row per
-member+date+meal; `ai_score` from Claude, `coach_score` optional override) · `feedback` (one row per
-mission, upserted so coaches can revise it).
+`profiles` (role, `name` — unique, labeled "닉네임" in the UI, `class_id`, `bio`/`tags`/`photo_url` for
+coaches) · `classes` (ranking is scoped to the viewer's class, not global) · `coach_assignments` (member ↔
+coach — admin-only now; there is no member-facing coach picker anywhere, onboarding or mypage) · `goals`
+(`unit`: body_fat_pct/weight_kg/muscle_mass_kg, driven by a member-facing "식단 목적" — 감량/증량 — choice
+that can exist with `current_value`/`target_value`/`target_date` all still null, a "unit chosen, values not
+filled in yet" state that view components must not treat as a complete goal) · `body_logs` (one row per
+member per day; see `latestBodyLogValue()` in `src/lib/goal.ts`) · `missions` (`meal_type`:
+breakfast/lunch/dinner, one row per member+date+meal; `ai_score` from Claude — prompt rubric varies by the
+member's goal `unit` at submission time, see `scoreMissionPhoto()`'s `goalType` param in `src/lib/ai-score.ts`
+— `coach_score` optional override) · `feedback` (one row per mission, upserted so coaches can revise it).
 
 `finalScore()` in `src/lib/score.ts` (`coach_score ?? ai_score ?? 0`) is the single source of truth for
 "how many carrots did this mission earn" — every place that counts carrots (today's mission view, the

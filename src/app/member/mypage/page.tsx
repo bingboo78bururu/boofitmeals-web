@@ -2,31 +2,21 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { latestBodyLogValue } from "@/lib/goal";
 import { GoalForm } from "../goal-form";
-import { CoachSettingsForm } from "./coach-settings-form";
+import { GoalTypeForm } from "./goal-type-form";
 import { ClassSettingsForm } from "./class-settings-form";
 
 export default async function MyPage() {
   const profile = await requireRole("member");
   const supabase = await createClient();
 
-  const [{ data: goal }, { data: coaches }, { data: assignment }, { data: classes }] =
-    await Promise.all([
-      supabase
-        .from("goals")
-        .select("unit, current_value, target_value, target_date")
-        .eq("member_id", profile.id)
-        .maybeSingle(),
-      supabase
-        .from("profiles")
-        .select("id, name, bio, tags, photo_url")
-        .eq("role", "coach"),
-      supabase
-        .from("coach_assignments")
-        .select("coach_id")
-        .eq("member_id", profile.id)
-        .maybeSingle(),
-      supabase.from("classes").select("id, name").order("name"),
-    ]);
+  const [{ data: goal }, { data: classes }] = await Promise.all([
+    supabase
+      .from("goals")
+      .select("unit, current_value, target_value, target_date")
+      .eq("member_id", profile.id)
+      .maybeSingle(),
+    supabase.from("classes").select("id, name").order("name"),
+  ]);
 
   const goalWithLatest = goal
     ? {
@@ -45,16 +35,19 @@ export default async function MyPage() {
       </div>
 
       <section>
-        <h2 className="mb-3 text-lg font-bold">목표</h2>
-        <GoalForm initial={goalWithLatest} />
+        <h2 className="mb-3 text-lg font-bold">식단 목적</h2>
+        <GoalTypeForm unit={goal?.unit ?? null} />
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-bold">담당 영양코치</h2>
-        <CoachSettingsForm
-          coaches={coaches ?? []}
-          currentCoachId={assignment?.coach_id ?? null}
-        />
+        <h2 className="mb-3 text-lg font-bold">하위 목표</h2>
+        {goal ? (
+          <GoalForm initial={goalWithLatest} unit={goal.unit} />
+        ) : (
+          <p className="rounded-xl border border-line bg-card px-4 py-3 text-sm text-ink-soft">
+            먼저 식단 목적을 선택해주세요.
+          </p>
+        )}
       </section>
 
       <section>

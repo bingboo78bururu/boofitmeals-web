@@ -7,11 +7,11 @@ import { latestBodyLogValue } from "@/lib/goal";
 function EmptyBanner() {
   return (
     <div className="border-b border-line bg-cream-soft">
-      <div className="mx-auto max-w-5xl px-6 py-2.5 text-sm text-ink-soft">
-        아직 목표가 설정되지 않았어요.{" "}
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-6 py-2.5 text-sm text-ink-soft">
+        <span>아직 목표가 설정되지 않았어요.</span>
         <Link
           href="/member/mypage"
-          className="font-medium text-carrot-dark hover:underline"
+          className="shrink-0 font-medium text-carrot-dark hover:underline"
         >
           설정하기 {">"}
         </Link>

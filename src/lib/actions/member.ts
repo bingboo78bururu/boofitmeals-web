@@ -119,25 +119,50 @@ export async function logBody(
   return { success: true };
 }
 
-export async function updateCoach(
+export async function updateGoalType(
   _prevState: SimpleFormState,
   formData: FormData
 ): Promise<SimpleFormState> {
   const profile = await requireRole("member");
 
-  const coachId = String(formData.get("coach_id") ?? "");
-  if (!coachId) return { error: "코치를 선택해주세요." };
+  const goalType = String(formData.get("goal_type") ?? "");
+  if (goalType !== "loss" && goalType !== "gain") {
+    return { error: "식단 목적을 선택해주세요." };
+  }
+  const unit: GoalUnit = goalType === "gain" ? "muscle_mass_kg" : "body_fat_pct";
 
   const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("goals")
+    .select("unit")
+    .eq("member_id", profile.id)
+    .maybeSingle();
+
+  const payload: {
+    member_id: string;
+    unit: GoalUnit;
+    current_value?: null;
+    target_value?: null;
+    target_date?: null;
+  } = { member_id: profile.id, unit };
+
+  // 단위가 실제로 바뀌면 이전 단위 기준으로 입력했던 하위 목표 수치는 의미가
+  // 없어지므로 같이 초기화한다.
+  if (existing && existing.unit !== unit) {
+    payload.current_value = null;
+    payload.target_value = null;
+    payload.target_date = null;
+  }
+
   const { error } = await supabase
-    .from("coach_assignments")
-    .upsert({ member_id: profile.id, coach_id: coachId }, { onConflict: "member_id" });
+    .from("goals")
+    .upsert(payload, { onConflict: "member_id" });
 
   if (error) return { error: error.message };
 
+  revalidatePath("/member");
   revalidatePath("/member/mypage");
-  revalidatePath("/coach");
-  revalidatePath("/admin");
+  revalidatePath("/member/growth");
   return { success: true };
 }
 
@@ -201,7 +226,14 @@ export async function submitMission(
 
     photoUrl = `${supabase.storage.from("mission-photos").getPublicUrl(path).data.publicUrl}?t=${Date.now()}`;
 
-    const aiResult = await scoreMissionPhoto(photoBytes, photo.type);
+    const { data: goalRow } = await supabase
+      .from("goals")
+      .select("unit")
+      .eq("member_id", profile.id)
+      .maybeSingle();
+    const goalType = goalRow ? (goalRow.unit === "muscle_mass_kg" ? "gain" : "loss") : null;
+
+    const aiResult = await scoreMissionPhoto(photoBytes, photo.type, goalType);
     aiScore = aiResult ? aiResult.score : null;
     aiScoreReason = aiResult ? aiResult.reason : null;
   }
