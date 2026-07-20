@@ -168,7 +168,7 @@ export default async function CalendarPage({
       </div>
 
       <p className="text-sm text-ink-soft">
-        {year}년 {month + 1}월 {markedDays.size}일 실천했어요.
+        이번달 {markedDays.size}일 실천했어요.
       </p>
     </div>
   );

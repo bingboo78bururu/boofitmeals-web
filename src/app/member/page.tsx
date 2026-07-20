@@ -195,7 +195,7 @@ export default async function MemberPage({
             return (
               <div
                 key={type}
-                className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5"
+                className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-line bg-card p-5"
               >
                 {isToday ? (
                   <MissionForm

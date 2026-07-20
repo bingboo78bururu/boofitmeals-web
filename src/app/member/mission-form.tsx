@@ -143,16 +143,16 @@ export function MissionForm({
           className="rounded-xl border border-line bg-background px-4 py-3 outline-none focus:border-carrot"
         />
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           {preview && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={preview}
               alt={`${mealLabel} 사진`}
-              className="h-20 w-20 rounded-xl border border-line object-cover"
+              className="h-20 w-20 shrink-0 rounded-xl border border-line object-cover"
             />
           )}
-          <label className="flex cursor-pointer flex-col gap-1 text-sm">
+          <label className="flex min-w-0 flex-1 cursor-pointer flex-col gap-1 text-sm">
             <span className="font-medium">식단 사진 (선택)</span>
             <input
               type="file"
@@ -162,7 +162,7 @@ export function MissionForm({
                 const file = e.target.files?.[0];
                 setPreview(file ? URL.createObjectURL(file) : existingPhotoUrl);
               }}
-              className="text-xs text-ink-soft file:mr-3 file:rounded-lg file:border-0 file:bg-cream-soft file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-carrot-dark"
+              className="w-full max-w-full truncate text-xs text-ink-soft file:mr-3 file:rounded-lg file:border-0 file:bg-cream-soft file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-carrot-dark"
             />
           </label>
         </div>
