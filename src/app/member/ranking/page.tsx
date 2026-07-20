@@ -6,10 +6,38 @@ export default async function RankingPage() {
   const profile = await requireRole("member");
   const supabase = await createClient();
 
-  const [{ data: members }, { data: missions }] = await Promise.all([
-    supabase.from("profiles").select("id, name").eq("role", "member"),
-    supabase.from("missions").select("member_id, ai_score, coach_score"),
+  if (!profile.class_id) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-2xl font-bold">당근 랭킹보드</h1>
+          <p className="mt-1 text-sm text-ink-soft">
+            동료들과 함께 쌓은 당근을 확인해보세요.
+          </p>
+        </div>
+        <p className="rounded-2xl border border-line bg-card p-5 text-sm text-ink-soft">
+          아직 클래스가 배정되지 않았어요. 운영자에게 문의해주세요.
+        </p>
+      </div>
+    );
+  }
+
+  const [{ data: classRow }, { data: members }] = await Promise.all([
+    supabase.from("classes").select("name").eq("id", profile.class_id).single(),
+    supabase
+      .from("profiles")
+      .select("id, name")
+      .eq("role", "member")
+      .eq("class_id", profile.class_id),
   ]);
+
+  const memberIds = (members ?? []).map((m) => m.id);
+  const { data: missions } = memberIds.length
+    ? await supabase
+        .from("missions")
+        .select("member_id, ai_score, coach_score")
+        .in("member_id", memberIds)
+    : { data: [] as { member_id: string; ai_score: number | null; coach_score: number | null }[] };
 
   const counts = new Map<string, number>();
   for (const m of missions ?? []) {
@@ -25,7 +53,8 @@ export default async function RankingPage() {
       <div>
         <h1 className="text-2xl font-bold">당근 랭킹보드</h1>
         <p className="mt-1 text-sm text-ink-soft">
-          동료들과 함께 쌓은 당근을 확인해보세요.
+          {classRow?.name ?? "내 클래스"} 동료들과 함께 쌓은 당근을
+          확인해보세요.
         </p>
       </div>
 

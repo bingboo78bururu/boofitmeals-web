@@ -9,17 +9,38 @@ export interface Database {
           id: string;
           role: UserRole;
           name: string;
+          class_id: string | null;
           created_at: string;
         };
         Insert: {
           id: string;
           role?: UserRole;
           name: string;
+          class_id?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           role?: UserRole;
+          name?: string;
+          class_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      classes: {
+        Row: {
+          id: string;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
           name?: string;
           created_at?: string;
         };

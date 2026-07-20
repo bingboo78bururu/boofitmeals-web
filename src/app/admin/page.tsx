@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { AssignCoachForm } from "./assign-coach-form";
+import { ClassForm } from "./class-form";
 import { todayString } from "@/lib/dates";
 
 const BUCKETS = [
@@ -26,8 +27,9 @@ export default async function AdminPage() {
     { data: assignments },
     { data: monthMissions },
     { data: todayMissions },
+    { data: classes },
   ] = await Promise.all([
-    supabase.from("profiles").select("id, name").eq("role", "member"),
+    supabase.from("profiles").select("id, name, class_id").eq("role", "member"),
     supabase.from("profiles").select("id, name").eq("role", "coach"),
     supabase.from("coach_assignments").select("member_id, coach_id"),
     supabase
@@ -35,6 +37,7 @@ export default async function AdminPage() {
       .select("member_id, mission_date, ai_score")
       .gte("mission_date", monthStart),
     supabase.from("missions").select("member_id").eq("mission_date", today),
+    supabase.from("classes").select("id, name").order("name"),
   ]);
 
   const coachNameById = new Map((coaches ?? []).map((c) => [c.id, c.name]));
@@ -73,6 +76,15 @@ export default async function AdminPage() {
     }
   }
   const aiScoredTotal = aiScoreCounts.reduce((a, b) => a + b, 0);
+
+  const memberCountByClass = new Map<string, number>();
+  for (const member of members ?? []) {
+    if (!member.class_id) continue;
+    memberCountByClass.set(
+      member.class_id,
+      (memberCountByClass.get(member.class_id) ?? 0) + 1
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -175,6 +187,35 @@ export default async function AdminPage() {
             </table>
           </div>
         )}
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold">클래스 관리</h2>
+        <p className="mb-3 text-xs text-ink-soft">
+          같은 클래스에 속한 회원끼리 랭킹보드가 묶여요. 회원가입 시 직접
+          선택하거나, 아래에서 나중에 배정할 수 있어요.
+        </p>
+        <div className="flex flex-col gap-4">
+          <ClassForm />
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {(classes ?? []).map((c) => (
+              <li
+                key={c.id}
+                className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-2.5 text-sm"
+              >
+                <span>{c.name}</span>
+                <span className="text-ink-soft">
+                  {memberCountByClass.get(c.id) ?? 0}명
+                </span>
+              </li>
+            ))}
+            {(classes ?? []).length === 0 && (
+              <p className="text-sm text-ink-soft">
+                아직 생성된 클래스가 없어요.
+              </p>
+            )}
+          </ul>
+        </div>
       </section>
 
       <section>

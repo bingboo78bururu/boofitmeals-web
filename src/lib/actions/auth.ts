@@ -52,7 +52,7 @@ export async function signup(
   }
 
   revalidatePath("/", "layout");
-  redirect(roleHome[role] ?? "/member");
+  redirect(role === "member" ? "/signup/coach" : (roleHome[role] ?? "/member"));
 }
 
 export async function login(

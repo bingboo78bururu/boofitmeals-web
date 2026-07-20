@@ -9,10 +9,18 @@ create type user_role as enum ('member', 'coach', 'admin');
 -- 하루 세 끼 인증: 아침 / 점심 / 저녁
 create type meal_type as enum ('breakfast', 'lunch', 'dinner');
 
+-- 클래스: 같은 클래스끼리 랭킹보드가 묶임
+create table classes (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  created_at timestamptz not null default now()
+);
+
 create table profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   role user_role not null default 'member',
   name text not null,
+  class_id uuid references classes (id) on delete set null,
   created_at timestamptz not null default now()
 );
 
@@ -116,11 +124,33 @@ create trigger missions_enforce_update_columns
   before update on missions
   for each row execute procedure public.enforce_mission_update_columns();
 
+alter table classes enable row level security;
 alter table profiles enable row level security;
 alter table goals enable row level security;
 alter table coach_assignments enable row level security;
 alter table missions enable row level security;
 alter table feedback enable row level security;
+
+-- classes: 회원가입 시 선택할 수 있도록 로그인 사용자에게 공개, 생성/수정/삭제는 운영자만
+create policy "classes readable by authenticated users"
+  on classes for select
+  to authenticated
+  using (true);
+
+create policy "classes insert by admin"
+  on classes for insert
+  to authenticated
+  with check (public.my_role() = 'admin');
+
+create policy "classes update by admin"
+  on classes for update
+  to authenticated
+  using (public.my_role() = 'admin');
+
+create policy "classes delete by admin"
+  on classes for delete
+  to authenticated
+  using (public.my_role() = 'admin');
 
 -- profiles: 이름/역할은 랭킹보드·배정 표시를 위해 로그인 사용자에게 공개
 create policy "profiles are readable by authenticated users"

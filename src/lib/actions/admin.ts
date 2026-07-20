@@ -29,3 +29,22 @@ export async function assignCoach(
   revalidatePath("/coach");
   return { success: true };
 }
+
+export async function createClass(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  await requireRole("admin");
+
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) return { error: "클래스 이름을 입력해주세요." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("classes").insert({ name });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin");
+  revalidatePath("/signup/class");
+  return { success: true };
+}

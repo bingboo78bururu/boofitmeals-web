@@ -24,5 +24,6 @@
 | 18 | 영양코치가 AI 채점 점수를 직접 조정(override)할 수 있는 기능 | finished | `missions.coach_score` 컬럼 추가, 있으면 최종 점수로 우선 적용(coach_score ?? ai_score). 코치 화면 피드에서 0/1/2 버튼으로 조정 + "AI 점수로 되돌리기". DB 트리거로 회원은 note/photo/ai_score만, 코치는 coach_score만 수정 가능하도록 컬럼 단위 제한. 랭킹·캘린더·오늘의미션 당근 집계 모두 최종 점수 기준으로 반영 |
 | 19 | 당근 캘린더 하단 문구 "YYYY년 M월 n일 실천했어요" → "이번달 n일 실천했어요"로 변경 | finished | |
 | 20 | 오늘의 미션 — 식단 사진 업로드 칸이 프레임 밖으로 튀어나가는 레이아웃 깨짐 | finished | 파일 입력 줄바꿈 허용 + 너비 제한/말줄임 처리, 미션 카드에 overflow-hidden 추가 |
+| 21 | 회원가입 3단계 분리 (계정정보 → 영양코치 선택 → 클래스 선택) + 클래스 개념 도입, 랭킹보드는 같은 클래스끼리만 | finished | `/signup` → `/signup/coach` → `/signup/class` → `/member`. 각 단계 "나중에 선택할게요" 건너뛰기 가능. `classes` 테이블 추가, 운영자 화면(`/admin`)에 클래스 생성 UI 추가. 랭킹보드는 `profiles.class_id` 기준으로 스코프, 클래스 미배정 회원은 안내 문구 표시 |
 
 > 새 QA 요청 주시면 이 표에 to go로 추가하고, 진행 상태 바뀔 때마다 업데이트할게요.
