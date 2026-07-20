@@ -40,6 +40,27 @@ npx vercel alias set <printed-deployment-url> boofitmeals-web.vercel.app   # req
 After deploying, also commit and push to GitHub (`git add` / `git commit` / `git push origin main`) — the
 repo doubles as a portfolio piece, so it should keep a real commit history alongside what's live.
 
+### Secrets — never commit these
+
+Real secrets/env vars this project uses, and where they live:
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — in `.env.local` for local dev, and set in
+  Vercel for prod. `NEXT_PUBLIC_*` vars are bundled into client JS by design, so these are meant to be
+  public; RLS (not secrecy of the anon key) is what actually protects data.
+- `ANTHROPIC_API_KEY` — Vercel-only, marked "Sensitive". Deliberately **not** in `.env.local`; never add it
+  there or anywhere else in the repo. `vercel env pull` returns a `[SENSITIVE]` placeholder for it, not the
+  real value — that placeholder is not evidence the key is wrong.
+
+Rules:
+- `.gitignore` already excludes `.env*`, `.vercel`, `node_modules`, `.next`, and `/캡처이미지` (QA
+  screenshots, which can contain incidental sensitive info like SQL query results or photo URLs) — don't
+  remove or narrow these.
+- Never write an actual key/token value into a file, commit message, `QA.md` entry, or a code comment, even
+  when documenting how a bug was diagnosed. If a new secret is needed, tell the user to set it directly via
+  `vercel env add <NAME> production` (entered by them, never pasted into chat) rather than adding it to
+  `.env.local` or any tracked file.
+- Before `git add -A` + commit, check `git status` for anything unexpected (a stray local test script,
+  an `.env*.local` variant, etc.) rather than committing blind.
+
 ### Database changes
 
 `supabase/schema.sql` is the canonical full schema (run once on a fresh project). There is no migration
