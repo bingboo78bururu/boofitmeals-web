@@ -13,7 +13,7 @@ function EmptyBanner() {
           href="/member/mypage"
           className="font-medium text-carrot-dark hover:underline"
         >
-          마이페이지에서 설정하기
+          설정하기 {">"}
         </Link>
       </div>
     </div>

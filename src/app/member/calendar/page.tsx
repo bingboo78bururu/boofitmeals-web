@@ -106,11 +106,27 @@ export default async function CalendarPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold">당근 캘린더</h1>
-        <p className="mt-1 text-sm text-ink-soft">
-          미션을 인증한 날마다 당근이 채워져요.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">당근 캘린더</h1>
+          <p className="mt-1 text-sm text-ink-soft">
+            식단을 인증해서 당근을 채워보세요.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2 pt-1 text-[11px] text-ink-soft">
+          <span className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-line" />
+            0개
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-carrot" />
+            1개
+          </span>
+          <span className="flex items-center gap-1">
+            <CarrotDot score={2} label="범례" />
+            2개
+          </span>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-line bg-card p-5">
