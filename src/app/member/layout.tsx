@@ -11,8 +11,8 @@ import {
 
 const bottomNav = [
   { href: "/member/feed", label: "우리반", icon: <FeedIcon /> },
-  { href: "/member/growth", label: "성장", icon: <GrowthIcon /> },
-  { href: "/member", label: "인증", icon: <HomeIcon /> },
+  { href: "/member/growth", label: "내 변화", icon: <GrowthIcon /> },
+  { href: "/member", label: "기록", icon: <HomeIcon /> },
   { href: "/member/calendar", label: "당근캘린더", icon: <CalendarIcon /> },
   { href: "/member/mypage", label: "MY", icon: <MyPageIcon /> },
 ];

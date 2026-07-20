@@ -85,7 +85,7 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex min-w-0 flex-col gap-1.5">
           <label htmlFor="current_value" className="text-sm font-medium">
             현재 {goalUnitLabel[unit]} ({goalUnitSuffix[unit]})
           </label>
@@ -96,10 +96,10 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
             step="0.1"
             required
             defaultValue={initial?.current_value ?? undefined}
-            className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+            className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex min-w-0 flex-col gap-1.5">
           <label htmlFor="target_value" className="text-sm font-medium">
             목표 {goalUnitLabel[unit]} ({goalUnitSuffix[unit]})
           </label>
@@ -110,10 +110,10 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
             step="0.1"
             required
             defaultValue={initial?.target_value ?? undefined}
-            className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+            className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex min-w-0 flex-col gap-1.5">
           <label htmlFor="target_date" className="text-sm font-medium">
             목표일
           </label>
@@ -123,7 +123,7 @@ export function GoalForm({ initial }: { initial: Goal | null }) {
             type="date"
             required
             defaultValue={initial?.target_date ?? undefined}
-            className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+            className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
           />
         </div>
       </div>

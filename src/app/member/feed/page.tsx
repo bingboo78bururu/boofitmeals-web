@@ -183,7 +183,7 @@ export default async function MemberFeedPage() {
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {mission.ai_score !== null && (
-                      <span className="w-fit rounded-full bg-cream-soft px-2 py-0.5 text-xs text-carrot-dark">
+                      <span className="w-fit rounded-lg bg-cream-soft px-2 py-0.5 text-xs text-carrot-dark">
                         🤖 AI 채점 {mission.ai_score}점
                         {mission.ai_score_reason
                           ? ` · ${mission.ai_score_reason}`
@@ -191,7 +191,7 @@ export default async function MemberFeedPage() {
                       </span>
                     )}
                     {mission.coach_score !== null && (
-                      <span className="w-fit rounded-full bg-leaf/10 px-2 py-0.5 text-xs text-leaf-dark">
+                      <span className="w-fit rounded-lg bg-leaf/10 px-2 py-0.5 text-xs text-leaf-dark">
                         🥕 최종 점수 {finalScore(mission)}점 (코치 조정)
                       </span>
                     )}

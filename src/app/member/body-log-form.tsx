@@ -56,7 +56,7 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
       action={action}
       className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-end sm:flex-wrap"
     >
-      <div className="flex flex-1 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <label htmlFor="weight_kg" className="text-sm font-medium">
           체중 (kg)
         </label>
@@ -66,10 +66,10 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
           type="number"
           step="0.1"
           defaultValue={existing?.weight_kg ?? undefined}
-          className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+          className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
         />
       </div>
-      <div className="flex flex-1 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <label htmlFor="body_fat_pct" className="text-sm font-medium">
           체지방률 (%)
         </label>
@@ -79,10 +79,10 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
           type="number"
           step="0.1"
           defaultValue={existing?.body_fat_pct ?? undefined}
-          className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+          className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
         />
       </div>
-      <div className="flex flex-1 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <label htmlFor="muscle_mass_kg" className="text-sm font-medium">
           근육량 (kg)
         </label>
@@ -92,7 +92,7 @@ export function BodyLogForm({ existing }: { existing: BodyLog | null }) {
           type="number"
           step="0.1"
           defaultValue={existing?.muscle_mass_kg ?? undefined}
-          className="rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
+          className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
         />
       </div>
 
