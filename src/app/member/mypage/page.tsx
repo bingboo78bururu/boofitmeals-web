@@ -12,7 +12,7 @@ export default async function MyPage() {
     await Promise.all([
       supabase
         .from("goals")
-        .select("current_body_fat, target_body_fat, target_date")
+        .select("unit, current_value, target_value, target_date")
         .eq("member_id", profile.id)
         .maybeSingle(),
       supabase.from("profiles").select("id, name").eq("role", "coach"),

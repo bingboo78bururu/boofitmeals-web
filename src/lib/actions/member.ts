@@ -5,9 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { scoreMissionPhoto } from "@/lib/ai-score";
 import { todayString } from "@/lib/dates";
-import type { MealType } from "@/lib/supabase/types";
+import type { GoalUnit, MealType } from "@/lib/supabase/types";
 
 const MEAL_TYPES: MealType[] = ["breakfast", "lunch", "dinner"];
+const GOAL_UNITS: GoalUnit[] = ["body_fat_pct", "weight_kg"];
 
 export type SimpleFormState = { error: string } | { success: true } | undefined;
 export type MissionFormState =
@@ -21,20 +22,26 @@ export async function saveGoal(
 ): Promise<SimpleFormState> {
   const profile = await requireRole("member");
 
-  const currentBodyFat = Number(formData.get("current_body_fat"));
-  const targetBodyFat = Number(formData.get("target_body_fat"));
+  const unit = String(formData.get("unit") ?? "") as GoalUnit;
+  if (!GOAL_UNITS.includes(unit)) {
+    return { error: "목표 단위가 올바르지 않아요." };
+  }
+
+  const currentValue = Number(formData.get("current_value"));
+  const targetValue = Number(formData.get("target_value"));
   const targetDate = String(formData.get("target_date") ?? "");
 
-  if (!currentBodyFat || !targetBodyFat || !targetDate) {
-    return { error: "체지방률과 목표일을 모두 입력해주세요." };
+  if (!currentValue || !targetValue || !targetDate) {
+    return { error: "현재/목표 수치와 목표일을 모두 입력해주세요." };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.from("goals").upsert(
     {
       member_id: profile.id,
-      current_body_fat: currentBodyFat,
-      target_body_fat: targetBodyFat,
+      unit,
+      current_value: currentValue,
+      target_value: targetValue,
       target_date: targetDate,
       updated_at: new Date().toISOString(),
     },
@@ -43,7 +50,40 @@ export async function saveGoal(
 
   if (error) return { error: error.message };
 
+  revalidatePath("/member");
   revalidatePath("/member/mypage");
+  return { success: true };
+}
+
+export async function logBody(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  const profile = await requireRole("member");
+
+  const weightRaw = String(formData.get("weight_kg") ?? "").trim();
+  const bodyFatRaw = String(formData.get("body_fat_pct") ?? "").trim();
+  const weightKg = weightRaw ? Number(weightRaw) : null;
+  const bodyFatPct = bodyFatRaw ? Number(bodyFatRaw) : null;
+
+  if (weightKg === null && bodyFatPct === null) {
+    return { error: "체중 또는 체지방률 중 하나는 입력해주세요." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("body_logs").upsert(
+    {
+      member_id: profile.id,
+      log_date: todayString(),
+      weight_kg: weightKg,
+      body_fat_pct: bodyFatPct,
+    },
+    { onConflict: "member_id,log_date" }
+  );
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/member");
   return { success: true };
 }
 

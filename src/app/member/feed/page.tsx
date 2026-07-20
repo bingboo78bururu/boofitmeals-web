@@ -120,11 +120,21 @@ export default async function MemberFeedPage() {
                   <p className="whitespace-pre-wrap text-sm text-ink-soft">
                     {mission.note}
                   </p>
-                  {mission.ai_score !== null && (
-                    <span className="w-fit rounded-full bg-cream-soft px-2 py-0.5 text-xs text-carrot-dark">
-                      🥕 최종 점수 {finalScore(mission)}점
-                    </span>
-                  )}
+                  <div className="flex flex-wrap gap-1.5">
+                    {mission.ai_score !== null && (
+                      <span className="w-fit rounded-full bg-cream-soft px-2 py-0.5 text-xs text-carrot-dark">
+                        🤖 AI 채점 {mission.ai_score}점
+                        {mission.ai_score_reason
+                          ? ` · ${mission.ai_score_reason}`
+                          : ""}
+                      </span>
+                    )}
+                    {mission.coach_score !== null && (
+                      <span className="w-fit rounded-full bg-leaf/10 px-2 py-0.5 text-xs text-leaf-dark">
+                        🥕 최종 점수 {finalScore(mission)}점 (코치 조정)
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

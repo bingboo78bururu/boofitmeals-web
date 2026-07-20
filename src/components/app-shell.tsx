@@ -9,12 +9,14 @@ export function AppShell({
   name,
   links,
   bottomNav,
+  banner,
   children,
 }: {
   role: UserRole;
   name: string;
   links: { href: string; label: string }[];
   bottomNav?: { href: string; label: string; icon: React.ReactNode }[];
+  banner?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -57,6 +59,7 @@ export function AppShell({
           </div>
         </div>
       </header>
+      {banner}
       <main
         className={`mx-auto w-full max-w-5xl flex-1 px-6 py-8 ${bottomNav ? "pb-28" : ""}`}
       >

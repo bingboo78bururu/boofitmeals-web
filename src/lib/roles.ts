@@ -1,4 +1,4 @@
-import type { MealType, UserRole } from "@/lib/supabase/types";
+import type { GoalUnit, MealType, UserRole } from "@/lib/supabase/types";
 
 export const roleHome: Record<UserRole, string> = {
   member: "/member",
@@ -16,4 +16,14 @@ export const mealLabel: Record<MealType, string> = {
   breakfast: "아침식사",
   lunch: "점심식사",
   dinner: "저녁식사",
+};
+
+export const goalUnitLabel: Record<GoalUnit, string> = {
+  body_fat_pct: "체지방률",
+  weight_kg: "체중",
+};
+
+export const goalUnitSuffix: Record<GoalUnit, string> = {
+  body_fat_pct: "%",
+  weight_kg: "kg",
 };

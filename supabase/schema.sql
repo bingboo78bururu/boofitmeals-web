@@ -9,6 +9,9 @@ create type user_role as enum ('member', 'coach', 'admin');
 -- 하루 세 끼 인증: 아침 / 점심 / 저녁
 create type meal_type as enum ('breakfast', 'lunch', 'dinner');
 
+-- 목표 단위: 체지방률 / 체중
+create type goal_unit as enum ('body_fat_pct', 'weight_kg');
+
 -- 클래스: 같은 클래스끼리 랭킹보드가 묶임
 create table classes (
   id uuid primary key default gen_random_uuid(),
@@ -27,10 +30,22 @@ create table profiles (
 create table goals (
   id uuid primary key default gen_random_uuid(),
   member_id uuid not null unique references profiles (id) on delete cascade,
-  current_body_fat numeric,
-  target_body_fat numeric,
+  unit goal_unit not null default 'body_fat_pct',
+  current_value numeric,
+  target_value numeric,
   target_date date,
   updated_at timestamptz not null default now()
+);
+
+-- 오늘의 체중/체지방률 기록 (하루 하나, 그래프용 시계열)
+create table body_logs (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references profiles (id) on delete cascade,
+  log_date date not null,
+  weight_kg numeric,
+  body_fat_pct numeric,
+  created_at timestamptz not null default now(),
+  unique (member_id, log_date)
 );
 
 create table coach_assignments (
@@ -149,6 +164,7 @@ create trigger missions_enforce_update_columns
 alter table classes enable row level security;
 alter table profiles enable row level security;
 alter table goals enable row level security;
+alter table body_logs enable row level security;
 alter table coach_assignments enable row level security;
 alter table missions enable row level security;
 alter table feedback enable row level security;
@@ -207,6 +223,30 @@ create policy "goals update by owner"
   on goals for update
   to authenticated
   using (member_id = auth.uid());
+
+-- body_logs: 본인, 담당 영양코치, 운영자만 조회/작성
+create policy "body_logs select"
+  on body_logs for select
+  to authenticated
+  using (
+    member_id = auth.uid()
+    or public.my_role() = 'admin'
+    or exists (
+      select 1 from coach_assignments ca
+      where ca.member_id = body_logs.member_id and ca.coach_id = auth.uid()
+    )
+  );
+
+create policy "body_logs insert by owner"
+  on body_logs for insert
+  to authenticated
+  with check (member_id = auth.uid());
+
+create policy "body_logs update by owner"
+  on body_logs for update
+  to authenticated
+  using (member_id = auth.uid())
+  with check (member_id = auth.uid());
 
 -- coach_assignments: 관련 당사자와 운영자만 조회, 운영자만 배정
 create policy "assignments select"

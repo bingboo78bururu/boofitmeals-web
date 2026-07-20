@@ -16,6 +16,12 @@ export function addDays(dateStr: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+export function diffDays(from: string, to: string): number {
+  const a = new Date(`${from}T00:00:00Z`);
+  const b = new Date(`${to}T00:00:00Z`);
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function isValidDateString(value: string): boolean {

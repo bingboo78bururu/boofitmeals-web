@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { MissionForm } from "./mission-form";
+import { BodyLogForm } from "./body-log-form";
 import { DateLinkContent } from "./date-link-content";
 import { mealLabel } from "@/lib/roles";
 import { addDays, isValidDateString, todayString } from "@/lib/dates";
@@ -104,7 +105,7 @@ export default async function MemberPage({
 
   const isToday = selectedDate === today;
 
-  const [{ data: selectedMissions }, { data: allMissionScores }] =
+  const [{ data: selectedMissions }, { data: allMissionScores }, { data: todayBodyLog }] =
     await Promise.all([
       supabase
         .from("missions")
@@ -117,6 +118,12 @@ export default async function MemberPage({
         .from("missions")
         .select("ai_score, coach_score")
         .eq("member_id", profile.id),
+      supabase
+        .from("body_logs")
+        .select("weight_kg, body_fat_pct")
+        .eq("member_id", profile.id)
+        .eq("log_date", today)
+        .maybeSingle(),
     ]);
 
   const carrotCount = (allMissionScores ?? []).reduce(
@@ -156,6 +163,11 @@ export default async function MemberPage({
           </p>
         </div>
       </div>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold">오늘의 체중/체지방률</h2>
+        <BodyLogForm existing={todayBodyLog ?? null} />
+      </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between">

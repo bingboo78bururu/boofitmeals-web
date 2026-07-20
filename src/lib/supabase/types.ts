@@ -1,5 +1,6 @@
 export type UserRole = "member" | "coach" | "admin";
 export type MealType = "breakfast" | "lunch" | "dinner";
+export type GoalUnit = "body_fat_pct" | "weight_kg";
 
 export interface Database {
   public: {
@@ -50,26 +51,56 @@ export interface Database {
         Row: {
           id: string;
           member_id: string;
-          current_body_fat: number | null;
-          target_body_fat: number | null;
+          unit: GoalUnit;
+          current_value: number | null;
+          target_value: number | null;
           target_date: string | null;
           updated_at: string;
         };
         Insert: {
           id?: string;
           member_id: string;
-          current_body_fat?: number | null;
-          target_body_fat?: number | null;
+          unit?: GoalUnit;
+          current_value?: number | null;
+          target_value?: number | null;
           target_date?: string | null;
           updated_at?: string;
         };
         Update: {
           id?: string;
           member_id?: string;
-          current_body_fat?: number | null;
-          target_body_fat?: number | null;
+          unit?: GoalUnit;
+          current_value?: number | null;
+          target_value?: number | null;
           target_date?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      body_logs: {
+        Row: {
+          id: string;
+          member_id: string;
+          log_date: string;
+          weight_kg: number | null;
+          body_fat_pct: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          member_id: string;
+          log_date: string;
+          weight_kg?: number | null;
+          body_fat_pct?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          member_id?: string;
+          log_date?: string;
+          weight_kg?: number | null;
+          body_fat_pct?: number | null;
+          created_at?: string;
         };
         Relationships: [];
       };
