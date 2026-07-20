@@ -47,7 +47,7 @@ export function AppShell({
             </div>
             <div className="flex items-center gap-3 text-sm">
               <span className="text-ink-soft">
-                {name} ·{" "}
+                {name}{" "}
                 <span className="font-medium text-carrot-dark">
                   {roleLabel[role]}
                 </span>
