@@ -86,6 +86,7 @@ export function GoalForm({
             name="current_value"
             type="number"
             step="0.1"
+            min="0"
             required
             defaultValue={initial?.current_value ?? undefined}
             className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
@@ -100,6 +101,7 @@ export function GoalForm({
             name="target_value"
             type="number"
             step="0.1"
+            min="0"
             required
             defaultValue={initial?.target_value ?? undefined}
             className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"

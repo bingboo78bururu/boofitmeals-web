@@ -46,8 +46,8 @@ export function AppShell({
               )}
             </div>
             <div className="flex items-center gap-3 text-sm">
-              <span className="text-ink-soft">
-                {name}{" "}
+              <span>
+                <span className="text-carrot-dark">{name}</span>{" "}
                 <span className="font-medium text-carrot-dark">
                   {roleLabel[role]}
                 </span>
@@ -63,7 +63,7 @@ export function AppShell({
         {banner}
       </div>
       <main
-        className={`mx-auto w-full max-w-5xl flex-1 px-6 py-8 ${bottomNav ? "pb-28" : ""}`}
+        className={`mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8 ${bottomNav ? "pb-28" : ""}`}
       >
         {children}
       </main>

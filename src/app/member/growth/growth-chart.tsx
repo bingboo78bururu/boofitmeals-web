@@ -232,6 +232,7 @@ export function GrowthChart({
 
       {showLogForm ? (
         <BodyLogForm
+          unit={unit}
           existing={existingLog}
           onSaved={() => setShowLogForm(false)}
           onCancel={() => setShowLogForm(false)}

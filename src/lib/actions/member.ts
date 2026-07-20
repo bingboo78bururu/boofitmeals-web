@@ -35,6 +35,9 @@ export async function saveGoal(
   if (!currentValue || !targetValue || !targetDate) {
     return { error: "현재/목표 수치와 목표일을 모두 입력해주세요." };
   }
+  if (currentValue < 0 || targetValue < 0) {
+    return { error: "수치는 0 이상이어야 해요." };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.from("goals").upsert(
@@ -94,6 +97,9 @@ export async function logBody(
 
   if (weightKg === null && bodyFatPct === null && muscleMassKg === null) {
     return { error: "체중, 체지방률, 근육량 중 하나는 입력해주세요." };
+  }
+  if ((weightKg ?? 0) < 0 || (bodyFatPct ?? 0) < 0 || (muscleMassKg ?? 0) < 0) {
+    return { error: "수치는 0 이상이어야 해요." };
   }
 
   const supabase = await createClient();

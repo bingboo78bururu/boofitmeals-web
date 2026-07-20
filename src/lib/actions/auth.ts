@@ -65,6 +65,24 @@ export async function signup(
     };
   }
 
+  if (role === "member") {
+    const { data: defaultCoach } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("role", "coach")
+      .eq("name", "김부핏")
+      .maybeSingle();
+
+    if (defaultCoach) {
+      await supabase
+        .from("coach_assignments")
+        .upsert(
+          { member_id: data.session.user.id, coach_id: defaultCoach.id },
+          { onConflict: "member_id" }
+        );
+    }
+  }
+
   revalidatePath("/", "layout");
   redirect(role === "member" ? "/signup/goal" : (roleHome[role] ?? "/member"));
 }

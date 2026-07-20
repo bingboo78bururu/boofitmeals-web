@@ -2,6 +2,8 @@
 
 import { useActionState, useEffect } from "react";
 import { logBody } from "@/lib/actions/member";
+import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
+import type { GoalUnit } from "@/lib/supabase/types";
 
 type BodyLog = {
   weight_kg: number | null;
@@ -10,10 +12,12 @@ type BodyLog = {
 };
 
 export function BodyLogForm({
+  unit,
   existing,
   onSaved,
   onCancel,
 }: {
+  unit: GoalUnit;
   existing: BodyLog | null;
   onSaved?: () => void;
   onCancel?: () => void;
@@ -24,47 +28,24 @@ export function BodyLogForm({
     if (state && "success" in state) onSaved?.();
   }, [state, onSaved]);
 
+  const existingValue = existing?.[unit] ?? undefined;
+
   return (
     <form
       action={action}
       className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-end sm:flex-wrap"
     >
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <label htmlFor="weight_kg" className="text-sm font-medium">
-          체중 (kg)
+        <label htmlFor={unit} className="text-sm font-medium">
+          {goalUnitLabel[unit]} ({goalUnitSuffix[unit]})
         </label>
         <input
-          id="weight_kg"
-          name="weight_kg"
+          id={unit}
+          name={unit}
           type="number"
           step="0.1"
-          defaultValue={existing?.weight_kg ?? undefined}
-          className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
-        />
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <label htmlFor="body_fat_pct" className="text-sm font-medium">
-          체지방률 (%)
-        </label>
-        <input
-          id="body_fat_pct"
-          name="body_fat_pct"
-          type="number"
-          step="0.1"
-          defaultValue={existing?.body_fat_pct ?? undefined}
-          className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
-        />
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <label htmlFor="muscle_mass_kg" className="text-sm font-medium">
-          근육량 (kg)
-        </label>
-        <input
-          id="muscle_mass_kg"
-          name="muscle_mass_kg"
-          type="number"
-          step="0.1"
-          defaultValue={existing?.muscle_mass_kg ?? undefined}
+          min="0"
+          defaultValue={existingValue}
           className="w-full rounded-xl border border-line bg-background px-3 py-2 outline-none focus:border-carrot"
         />
       </div>
