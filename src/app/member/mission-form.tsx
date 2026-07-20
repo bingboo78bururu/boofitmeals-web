@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { submitMission } from "@/lib/actions/member";
+import { compressImage } from "@/lib/compress-image";
 import type { MealType } from "@/lib/supabase/types";
 
 const MEAL_PLACEHOLDER: Record<MealType, string> = {
@@ -74,6 +75,7 @@ export function MissionForm({
   const [preview, setPreview] = useState<string | null>(existingPhotoUrl);
   const [editing, setEditing] = useState(!existingNote);
   const [popup, setPopup] = useState<string | null>(null);
+  const [compressing, setCompressing] = useState(false);
 
   useEffect(() => {
     if (state && "success" in state) {
@@ -158,12 +160,29 @@ export function MissionForm({
               type="file"
               name="photo"
               accept="image/png,image/jpeg"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                setPreview(file ? URL.createObjectURL(file) : existingPhotoUrl);
+              onChange={async (e) => {
+                const input = e.target;
+                const file = input.files?.[0];
+                if (!file) {
+                  setPreview(existingPhotoUrl);
+                  return;
+                }
+                setPreview(URL.createObjectURL(file));
+                setCompressing(true);
+                const compressed = await compressImage(file);
+                if (compressed !== file) {
+                  const dt = new DataTransfer();
+                  dt.items.add(compressed);
+                  input.files = dt.files;
+                  setPreview(URL.createObjectURL(compressed));
+                }
+                setCompressing(false);
               }}
               className="w-full max-w-full truncate text-xs text-ink-soft file:mr-3 file:rounded-lg file:border-0 file:bg-cream-soft file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-carrot-dark"
             />
+            {compressing && (
+              <span className="text-[11px] text-ink-soft">사진 최적화 중...</span>
+            )}
           </label>
         </div>
 
@@ -174,7 +193,7 @@ export function MissionForm({
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            disabled={pending}
+            disabled={pending || compressing}
             className="self-start rounded-xl bg-carrot px-5 py-2.5 font-semibold text-white hover:bg-carrot-dark disabled:opacity-60"
           >
             {pending
