@@ -83,7 +83,12 @@ this codebase:
 - Page `searchParams` and `params` are `Promise`s and must be `await`ed.
 - `next/link` exposes a `useLinkStatus()` hook for per-link pending state (see
   `src/app/member/date-link-content.tsx`).
-- `experimental.serverActions.bodySizeLimit` in `next.config.ts` is still nested under `experimental`.
+- `experimental.serverActions.bodySizeLimit` in `next.config.ts` is still nested under `experimental`, and is
+  set to `"4.5mb"` — not because that's some ideal value, but because Vercel serverless functions hard-cap
+  the request body at 4.5MB regardless of what Next.js is told to allow. A file-upload action that validates
+  a file size up to but not exceeding this cap will fail with a generic "This page couldn't load" (no server
+  log at all, since Vercel rejects it before the function runs) if the check is set any higher. Any new
+  file-upload action needs its own size check comfortably under 4.5MB (existing ones use 4MB).
 
 ### Role-based routing
 

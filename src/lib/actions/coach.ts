@@ -84,8 +84,8 @@ export async function updateCoachProfile(
   let photoUrl: string | undefined;
   const photo = formData.get("photo");
   if (photo instanceof File && photo.size > 0) {
-    if (photo.size > 5 * 1024 * 1024) {
-      return { error: "사진은 5MB 이하로 올려주세요." };
+    if (photo.size > 4 * 1024 * 1024) {
+      return { error: "사진은 4MB 이하로 올려주세요." };
     }
     const ext = photo.type === "image/png" ? "png" : "jpg";
     const path = `${profile.id}/photo.${ext}`;
