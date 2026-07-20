@@ -11,14 +11,11 @@ export function ClassSettingsForm({
   currentClassId: string | null;
 }) {
   const [state, action, pending] = useActionState(updateClass, undefined);
-  const [saved, setSaved] = useState(false);
+  const [editing, setEditing] = useState(!currentClassId);
+  const currentClassName = classes.find((c) => c.id === currentClassId)?.name;
 
   useEffect(() => {
-    if (state && "success" in state) {
-      setSaved(true);
-      const timer = setTimeout(() => setSaved(false), 2500);
-      return () => clearTimeout(timer);
-    }
+    if (state && "success" in state) setEditing(false);
   }, [state]);
 
   if (classes.length === 0) {
@@ -26,6 +23,21 @@ export function ClassSettingsForm({
       <p className="rounded-xl border border-line bg-card px-4 py-3 text-sm text-ink-soft">
         아직 생성된 클래스가 없어요.
       </p>
+    );
+  }
+
+  if (!editing && currentClassName) {
+    return (
+      <div className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-3 text-sm">
+        <span className="font-medium">{currentClassName}</span>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="text-xs font-medium text-ink-soft hover:text-carrot"
+        >
+          수정하기
+        </button>
+      </div>
     );
   }
 
@@ -60,7 +72,15 @@ export function ClassSettingsForm({
         >
           {pending ? "저장 중..." : "저장하기"}
         </button>
-        {saved && <span className="text-sm text-leaf-dark">저장했어요 ✓</span>}
+        {currentClassId && (
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="text-sm text-ink-soft hover:text-ink"
+          >
+            취소
+          </button>
+        )}
       </div>
     </form>
   );
