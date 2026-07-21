@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SignupTutorialButton } from "@/components/signup-tutorial-button";
 
 export default function Home() {
   return (
@@ -9,12 +10,9 @@ export default function Home() {
           <Link href="/login" className="text-ink-soft hover:text-ink">
             로그인
           </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-carrot px-4 py-2 text-white hover:bg-carrot-dark"
-          >
+          <SignupTutorialButton className="rounded-full bg-carrot px-4 py-2 text-white hover:bg-carrot-dark">
             회원가입
-          </Link>
+          </SignupTutorialButton>
         </nav>
       </header>
 
@@ -32,12 +30,9 @@ export default function Home() {
           영양코치의 피드백을 받고, 동료들과 함께 목표를 향해 나아가세요.
         </p>
         <div className="mt-8 flex gap-3">
-          <Link
-            href="/signup"
-            className="rounded-full bg-carrot px-6 py-3 font-semibold text-white hover:bg-carrot-dark"
-          >
+          <SignupTutorialButton className="rounded-full bg-carrot px-6 py-3 font-semibold text-white hover:bg-carrot-dark">
             무료로 시작하기
-          </Link>
+          </SignupTutorialButton>
           <Link
             href="/login"
             className="rounded-full border border-line px-6 py-3 font-semibold text-ink hover:border-carrot"

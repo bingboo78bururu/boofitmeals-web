@@ -99,9 +99,13 @@ if the role doesn't match — there's no shared "logged in, wrong role" page. `g
 the full `profiles` row (including `class_id`) and is `cache()`-wrapped per request.
 
 Auth-adjacent pages (`login`, `signup`, `forgot-password`, `reset-password`) live under the `(auth)` route
-group. Public signup is member-only and is a 3-step flow, each step skippable:
-`/signup` (account) → `/signup/coach` (pick a coach) → `/signup/class` (pick a class) → `/member`.
-Coach and admin accounts are provisioned directly in Supabase, not through public signup.
+group. Public signup is member-only: `/signup` (account) → `/signup/goal` (식단 목적: 감량/증량) →
+`/signup/class` (pick a class) → `/member`. New members are auto-assigned to the coach named exactly
+"김부핏" (see `signup()` in `src/lib/actions/auth.ts`) — there is no member-facing coach picker anywhere.
+Coach and admin accounts are provisioned directly in Supabase, not through public signup. The landing page
+(`src/app/page.tsx`) wraps both "회원가입" entry points in `SignupTutorialButton`
+(`src/components/signup-tutorial-button.tsx`), a client-side 3-slide modal explaining goal-setting/AI
+scoring, coach feedback, and the carrot ranking, before routing to `/signup`.
 
 ### Server actions
 
