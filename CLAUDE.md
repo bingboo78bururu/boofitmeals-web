@@ -37,8 +37,9 @@ npx vercel alias set <printed-deployment-url> boofitmeals-web.vercel.app   # req
                                         # the custom alias does NOT auto-track new prod deployments
 ```
 
-After deploying, also commit and push to GitHub (`git add` / `git commit` / `git push origin main`) — the
-repo doubles as a portfolio piece, so it should keep a real commit history alongside what's live.
+After deploying, also `git add` / `git commit` locally with a descriptive message — the repo doubles as a
+portfolio piece, so it should keep a real commit history. **Do not `git push`** (instructed 2026-07-21);
+commits stay local until the user asks to push again.
 
 ### Secrets — never commit these
 
