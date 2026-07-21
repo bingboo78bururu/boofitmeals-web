@@ -194,7 +194,7 @@ export function MissionForm({
           <button
             type="submit"
             disabled={pending || compressing}
-            className="self-start rounded-xl bg-carrot px-5 py-2.5 font-semibold text-white hover:bg-carrot-dark disabled:opacity-60"
+            className="self-start whitespace-nowrap rounded-xl bg-carrot px-5 py-2.5 text-sm font-semibold text-white hover:bg-carrot-dark disabled:opacity-60"
           >
             {pending
               ? "기록 중..."

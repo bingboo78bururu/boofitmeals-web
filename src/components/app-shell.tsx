@@ -51,7 +51,7 @@ export function AppShell({
                 <span className="text-carrot-dark">{roleLabel[role]}</span>
               </span>
               <form action={logout}>
-                <button className="text-ink-soft hover:text-ink">
+                <button className="cursor-pointer text-ink-soft hover:text-ink">
                   로그아웃
                 </button>
               </form>

@@ -179,6 +179,9 @@ export default async function MemberPage({
           )}
         </div>
 
+        <p className="mb-1 text-center text-lg font-bold">
+          {Number(selectedDate.slice(5, 7))}월
+        </p>
         <DateStrip selectedDate={selectedDate} today={today} />
 
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
