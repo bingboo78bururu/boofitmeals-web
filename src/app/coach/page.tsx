@@ -26,10 +26,10 @@ export default async function CoachPage() {
       ? supabase
           .from("missions")
           .select(
-            "id, member_id, mission_date, meal_type, note, photo_url, ai_score, ai_score_reason, coach_score"
+            "id, member_id, mission_date, meal_type, note, photo_url, ai_score, ai_score_reason, coach_score, created_at"
           )
           .in("member_id", memberIds)
-          .order("mission_date", { ascending: false })
+          .order("created_at", { ascending: false })
           .limit(30)
       : Promise.resolve({
           data: [] as {
@@ -42,6 +42,7 @@ export default async function CoachPage() {
             ai_score: number | null;
             ai_score_reason: string | null;
             coach_score: number | null;
+            created_at: string;
           }[],
         }),
   ]);
