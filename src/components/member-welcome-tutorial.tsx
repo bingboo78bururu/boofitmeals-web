@@ -28,14 +28,6 @@ const steps: Step[] = [
     targetId: "tour-carrot-count",
     text: "당근을 모아보세요! 하루에 최대 당근2개*3끼=6개,\n한달에 최대 180개 받을 수 있어요.\n100개를 모으면 서비스 비용 전액을 환급해드려요!",
   },
-  {
-    targetId: "bottom-nav-feed",
-    text: "같은 클래스 친구들의 인증 현황과\n랭킹을 여기서 볼 수 있어요.",
-  },
-  {
-    targetId: "bottom-nav-growth",
-    text: "체중·체지방률 변화 그래프는\n여기서 확인하세요.",
-  },
 ];
 
 type Rect = { top: number; left: number; width: number; height: number };
@@ -185,13 +177,13 @@ export function MemberWelcomeTutorial() {
             {step.text}
           </p>
           <div className="mt-3 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {!isFirst && (
                 <button
                   type="button"
                   onClick={prev}
                   disabled={isPending}
-                  className="text-xs text-ink-soft hover:text-ink disabled:opacity-60"
+                  className="rounded-full bg-line px-4 py-1.5 text-xs font-semibold text-ink-soft hover:bg-ink-soft/20 disabled:opacity-60"
                 >
                   이전
                 </button>
