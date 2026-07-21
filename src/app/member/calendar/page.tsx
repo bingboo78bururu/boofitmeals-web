@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { todayString } from "@/lib/dates";
 import { finalScore } from "@/lib/score";
+import { CarrotCount } from "@/components/carrot-count";
 import type { MealType } from "@/lib/supabase/types";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -70,12 +71,23 @@ export default async function CalendarPage({
   const nextMonthStart = new Date(year, month + 1, 1);
   const nextYm = `${nextMonthStart.getFullYear()}-${String(nextMonthStart.getMonth() + 1).padStart(2, "0")}`;
 
-  const { data: missions } = await supabase
-    .from("missions")
-    .select("mission_date, meal_type, ai_score, coach_score")
-    .eq("member_id", profile.id)
-    .gte("mission_date", monthStart.toISOString().slice(0, 10))
-    .lte("mission_date", monthEnd.toISOString().slice(0, 10));
+  const [{ data: missions }, { data: allMissionScores }] = await Promise.all([
+    supabase
+      .from("missions")
+      .select("mission_date, meal_type, ai_score, coach_score")
+      .eq("member_id", profile.id)
+      .gte("mission_date", monthStart.toISOString().slice(0, 10))
+      .lte("mission_date", monthEnd.toISOString().slice(0, 10)),
+    supabase
+      .from("missions")
+      .select("ai_score, coach_score")
+      .eq("member_id", profile.id),
+  ]);
+
+  const carrotCount = (allMissionScores ?? []).reduce(
+    (sum, m) => sum + finalScore(m),
+    0
+  );
 
   const scoresByDay = new Map<number, Map<MealType, number>>();
   for (const m of missions ?? []) {
@@ -83,10 +95,6 @@ export default async function CalendarPage({
     if (!scoresByDay.has(day)) scoresByDay.set(day, new Map());
     scoresByDay.get(day)!.set(m.meal_type, finalScore(m));
   }
-  const monthlyCarrotTotal = (missions ?? []).reduce(
-    (sum, m) => sum + finalScore(m),
-    0
-  );
 
   const daysInMonth = monthEnd.getDate();
   const leadingBlanks = monthStart.getDay();
@@ -112,24 +120,26 @@ export default async function CalendarPage({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">당근 현황</h1>
-          <p className="mt-1 text-sm text-ink-soft">
-            식단을 인증해서 당근을 채워보세요.
+          <p className="mt-1 whitespace-pre-line text-sm text-ink-soft">
+            {"환급챌린지 도전!\n이번 달 당근이 100개가 되면 비용 전액 환급해드려요!"}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2 pt-1 text-[11px] text-ink-soft">
-          <span className="flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-line" />
-            0개
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-carrot" />
-            1개
-          </span>
-          <span className="flex items-center gap-1">
-            <CarrotDot score={2} label="범례" />
-            2개
-          </span>
-        </div>
+        <CarrotCount count={carrotCount} />
+      </div>
+
+      <div className="flex items-center justify-end gap-2 text-[11px] text-ink-soft">
+        <span className="flex items-center gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-line" />
+          0개
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-carrot" />
+          1개
+        </span>
+        <span className="flex items-center gap-1">
+          <CarrotDot score={2} label="범례" />
+          2개
+        </span>
       </div>
 
       <div className="rounded-2xl border border-line bg-card p-5">
@@ -186,10 +196,12 @@ export default async function CalendarPage({
         </div>
       </div>
 
-      <p className="text-sm text-ink-soft">
-        이번달 총 당근 {monthlyCarrotTotal}개 모았어요. 이번달 당근이 100개가 되면 등록비용
-        전액을 환급해드려요.
-      </p>
+      <Link
+        href="/member"
+        className="rounded-xl bg-carrot py-3 text-center font-semibold text-white hover:bg-carrot-dark"
+      >
+        당근 받으러 가기
+      </Link>
     </div>
   );
 }

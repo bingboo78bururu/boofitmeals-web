@@ -6,6 +6,7 @@ import { DateLinkContent } from "./date-link-content";
 import { mealLabel } from "@/lib/roles";
 import { addDays, isValidDateString, todayString } from "@/lib/dates";
 import { finalScore } from "@/lib/score";
+import { CarrotCount } from "@/components/carrot-count";
 import type { MealType } from "@/lib/supabase/types";
 
 // 미션 인증(사진 업로드 + AI 채점 API 호출)이 기본 서버리스 함수 제한(10초)을
@@ -154,12 +155,7 @@ export default async function MemberPage({
             오늘도 뚜렷한 목표를 향해 한 걸음.
           </p>
         </div>
-        <div className="rounded-2xl bg-carrot-light/30 px-5 py-3 text-center">
-          <p className="text-xs font-medium text-carrot-dark">누적 당근</p>
-          <p className="text-2xl font-extrabold text-carrot-dark">
-            🥕 {carrotCount}
-          </p>
-        </div>
+        <CarrotCount count={carrotCount} />
       </div>
 
       <section>
