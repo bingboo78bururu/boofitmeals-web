@@ -45,3 +45,6 @@ next-env.d.ts
 
 # QA screenshots (not app source)
 /캡처이미지
+
+# personal portfolio docs (Notion PRD/QA export) — kept local-only, not for GitHub
+/docs
