@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { chooseClass } from "@/lib/actions/onboarding";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function ClassSelectForm({
   classes,
@@ -35,6 +36,7 @@ export function ClassSelectForm({
       >
         {pending ? "저장 중..." : "가입 완료"}
       </button>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

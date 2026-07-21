@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { requestPasswordReset } from "@/lib/actions/auth";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export default function ForgotPasswordPage() {
   const [state, action, pending] = useActionState(
@@ -61,6 +62,7 @@ export default function ForgotPasswordPage() {
           로그인으로 돌아가기
         </Link>
       </p>
+      <LoadingOverlay show={pending} />
     </div>
   );
 }

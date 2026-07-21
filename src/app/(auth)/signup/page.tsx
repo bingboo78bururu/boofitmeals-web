@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { signup } from "@/lib/actions/auth";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState(signup, undefined);
@@ -78,6 +79,7 @@ export default function SignupPage() {
           로그인
         </Link>
       </p>
+      <LoadingOverlay show={pending} />
     </div>
   );
 }

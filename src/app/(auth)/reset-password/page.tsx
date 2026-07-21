@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
@@ -121,6 +122,7 @@ export default function ResetPasswordPage() {
           인증 링크를 확인하고 있어요...
         </p>
       )}
+      <LoadingOverlay show={pending} />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { updateGoalType } from "@/lib/actions/member";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import type { GoalUnit } from "@/lib/supabase/types";
 
 type GoalType = "loss" | "gain";
@@ -84,6 +85,7 @@ export function GoalTypeForm({ unit }: { unit: GoalUnit | null }) {
           </button>
         )}
       </div>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

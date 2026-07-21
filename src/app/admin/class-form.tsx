@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createClass } from "@/lib/actions/admin";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function ClassForm() {
   const [state, action, pending] = useActionState(createClass, undefined);
@@ -39,6 +40,7 @@ export function ClassForm() {
       {state && "error" in state && (
         <p className="w-full text-xs text-carrot-dark">{state.error}</p>
       )}
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

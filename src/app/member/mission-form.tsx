@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { submitMission } from "@/lib/actions/member";
 import { compressImage } from "@/lib/compress-image";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import type { MealType } from "@/lib/supabase/types";
 
 const MEAL_PLACEHOLDER: Record<MealType, string> = {
@@ -215,6 +216,7 @@ export function MissionForm({
       </form>
 
       {popup && <ScorePopup message={popup} onClose={() => setPopup(null)} />}
+      <LoadingOverlay show={pending} />
     </>
   );
 }

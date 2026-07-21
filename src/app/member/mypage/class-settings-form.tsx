@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { updateClass } from "@/lib/actions/member";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function ClassSettingsForm({
   classes,
@@ -82,6 +83,7 @@ export function ClassSettingsForm({
           </button>
         )}
       </div>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

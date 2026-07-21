@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { assignCoach } from "@/lib/actions/admin";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function AssignCoachForm({
   members,
@@ -64,6 +65,7 @@ export function AssignCoachForm({
       {state && "error" in state && (
         <p className="w-full text-xs text-carrot-dark">{state.error}</p>
       )}
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { submitFeedback } from "@/lib/actions/coach";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function FeedbackForm({
   missionId,
@@ -67,6 +68,7 @@ export function FeedbackForm({
           </button>
         )}
       </div>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

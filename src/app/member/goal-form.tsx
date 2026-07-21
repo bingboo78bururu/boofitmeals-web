@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { saveGoal } from "@/lib/actions/member";
 import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import type { GoalUnit } from "@/lib/supabase/types";
 
 type Goal = {
@@ -144,6 +145,7 @@ export function GoalForm({
           </button>
         )}
       </div>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

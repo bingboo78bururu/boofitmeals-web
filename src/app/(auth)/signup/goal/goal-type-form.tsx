@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { chooseGoalType } from "@/lib/actions/onboarding";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 const OPTIONS = [
   {
@@ -45,6 +46,7 @@ export function GoalTypeForm() {
       >
         {pending ? "저장 중..." : "다음"}
       </button>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

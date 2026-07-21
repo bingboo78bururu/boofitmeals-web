@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { logBody } from "@/lib/actions/member";
 import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import type { GoalUnit } from "@/lib/supabase/types";
 
 type BodyLog = {
@@ -70,6 +71,7 @@ export function BodyLogForm({
           취소
         </button>
       </div>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

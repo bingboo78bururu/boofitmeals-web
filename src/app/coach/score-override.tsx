@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { overrideScore } from "@/lib/actions/coach";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 const OPTIONS = [0, 1, 2] as const;
 
@@ -52,6 +53,7 @@ export function ScoreOverride({
       {state && "error" in state && (
         <span className="text-xs text-carrot-dark">{state.error}</span>
       )}
+      <LoadingOverlay show={pending} />
     </form>
   );
 }

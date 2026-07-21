@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { updateCoachProfile } from "@/lib/actions/coach";
 import { compressImage } from "@/lib/compress-image";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function ProfileForm({
   bio,
@@ -160,6 +161,7 @@ export function ProfileForm({
           </button>
         )}
       </div>
+      <LoadingOverlay show={pending} />
     </form>
   );
 }
