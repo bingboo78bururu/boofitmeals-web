@@ -12,10 +12,10 @@ const MEAL_PLACEHOLDER: Record<MealType, string> = {
 };
 
 function popupMessage(aiScore: 0 | 1 | 2 | null | "unchanged"): string | null {
-  if (aiScore === 2) return "🥕🥕 탄단지 구성이 완벽해요! 당근 2개 드려요!";
+  if (aiScore === 2) return "탄단지 구성이 완벽해요!\n당근 2개 드려요! 🥕🥕";
   if (aiScore === 1)
-    return "🥕 당근 1개 드립니다! 다음에는 탄단지 비율에 좀 더 신경 써서 당근 2개를 받아보세요!";
-  if (aiScore === 0) return "😅 제대로 된 식사 사진이 아니에요! 당근 0개입니다.";
+    return "잘하셨어요! 당근 1개 드려요 🥕\n다음 식사에는 당근 2개 받아보세요 :)";
+  if (aiScore === 0) return "제대로 된 식사 사진이 아니예요! 😅\n당근 0개입니다!";
   if (aiScore === null)
     return "사진 채점에 실패했어요. 잠시 후 다시 시도해주세요.";
   return null; // "unchanged" — 사진 없이 메모만 수정한 경우, 팝업 없음
@@ -42,7 +42,7 @@ function ScorePopup({
         className="max-w-xs rounded-2xl bg-card p-6 text-center shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-base font-semibold">{message}</p>
+        <p className="whitespace-pre-line text-base font-semibold">{message}</p>
         <button
           onClick={onClose}
           className="mt-4 rounded-xl bg-carrot px-5 py-2 text-sm font-semibold text-white hover:bg-carrot-dark"
