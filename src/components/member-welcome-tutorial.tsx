@@ -25,8 +25,8 @@ const steps: Step[] = [
     showAiRubric: true,
   },
   {
-    targetId: "bottom-nav-carrot",
-    text: "모은 당근은 여기서 확인해요.\n한 달에 100개를 모으면 등록비 전액을 환급해드려요!",
+    targetId: "tour-carrot-count",
+    text: "당근을 모아보세요! 하루에 최대 당근2개*3끼=6개,\n한달에 최대 180개 받을 수 있어요.\n100개를 모으면 서비스 비용 전액을 환급해드려요!",
   },
   {
     targetId: "bottom-nav-feed",
@@ -236,8 +236,8 @@ export function MemberWelcomeTutorial() {
             </p>
             <ul className="mt-2 space-y-1 text-xs text-ink-soft">
               <li>0점 · 식사 사진이 아니거나 성의 없이 찍음</li>
-              <li>1점 · 성실하게 찍었지만 구성이나 양이 부족</li>
-              <li>2점 · 구성도 좋고 양도 충분</li>
+              <li>1점 🥕 · 성실하게 찍었지만 구성이나 양이 부족</li>
+              <li>2점 🥕🥕 · 구성도 좋고 양도 충분</li>
             </ul>
             <p className="mt-2 text-xs text-ink-soft">
               감량 목적이면 저탄수·채소·단백질 위주, 증량 목적이면 단백질과
