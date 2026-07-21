@@ -1,7 +1,11 @@
 import { requireRole } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell";
 
-const links = [{ href: "/admin", label: "대시보드" }];
+const links = [
+  { href: "/admin", label: "대시보드" },
+  { href: "/admin/feed", label: "미션 피드" },
+  { href: "/admin/users", label: "회원/코치 관리" },
+];
 
 export default async function AdminLayout({
   children,
