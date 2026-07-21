@@ -7,6 +7,7 @@ import { mealLabel } from "@/lib/roles";
 import { addDays, isValidDateString, todayString } from "@/lib/dates";
 import { finalScore } from "@/lib/score";
 import { CarrotCount } from "@/components/carrot-count";
+import { MemberWelcomeTutorial } from "@/components/member-welcome-tutorial";
 import type { MealType } from "@/lib/supabase/types";
 
 // 미션 인증(사진 업로드 + AI 채점 API 호출)이 기본 서버리스 함수 제한(10초)을
@@ -98,13 +99,13 @@ function DateStrip({
 export default async function MemberPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string }>;
+  searchParams: Promise<{ date?: string; welcome?: string }>;
 }) {
   const profile = await requireRole("member");
   const supabase = await createClient();
   const today = todayString();
 
-  const { date: dateParam } = await searchParams;
+  const { date: dateParam, welcome } = await searchParams;
   let selectedDate = dateParam && isValidDateString(dateParam) ? dateParam : today;
   if (selectedDate > today) selectedDate = today;
 
@@ -148,6 +149,7 @@ export default async function MemberPage({
 
   return (
     <div className="flex flex-col gap-8">
+      {welcome === "1" && <MemberWelcomeTutorial />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">안녕하세요, {profile.name}님</h1>
