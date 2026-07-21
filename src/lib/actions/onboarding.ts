@@ -47,5 +47,5 @@ export async function chooseClass(
     revalidatePath("/member/feed");
   }
 
-  redirect("/member");
+  redirect("/member?welcome=1");
 }

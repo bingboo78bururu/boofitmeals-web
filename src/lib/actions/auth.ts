@@ -111,8 +111,7 @@ export async function login(
     .single();
 
   revalidatePath("/", "layout");
-  const role = profile?.role ?? "member";
-  redirect(role === "member" ? "/member?welcome=1" : roleHome[role]);
+  redirect(roleHome[profile?.role ?? "member"]);
 }
 
 export async function requestPasswordReset(
