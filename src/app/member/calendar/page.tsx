@@ -120,9 +120,7 @@ export default async function CalendarPage({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">당근 현황</h1>
-          <p className="mt-1 whitespace-pre-line text-sm text-ink-soft">
-            {"환급챌린지 도전!\n이번 달 당근이 100개가 되면 비용 전액 환급해드려요!"}
-          </p>
+          <p className="mt-1 text-sm text-ink-soft">당근 100개 모으면 전액 환급!</p>
         </div>
         <CarrotCount count={carrotCount} />
       </div>
