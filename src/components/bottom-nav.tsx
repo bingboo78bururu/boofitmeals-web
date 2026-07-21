@@ -7,6 +7,7 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
+  id?: string;
 };
 
 export function BottomNav({
@@ -31,6 +32,7 @@ export function BottomNav({
             return (
               <Link
                 key={item.href}
+                id={item.id}
                 href={item.href}
                 className="flex flex-1 flex-col items-center gap-1"
               >
@@ -55,6 +57,7 @@ export function BottomNav({
           return (
             <Link
               key={item.href}
+              id={item.id}
               href={item.href}
               className="flex flex-1 touch-manipulation flex-col items-center gap-1 py-1 active:scale-95"
             >

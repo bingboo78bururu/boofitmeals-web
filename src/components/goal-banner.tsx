@@ -10,6 +10,7 @@ function EmptyBanner() {
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-6 py-2.5 text-sm text-ink-soft">
         <span>아직 목표가 설정되지 않았어요.</span>
         <Link
+          id="tour-goal-setting"
           href="/member/mypage"
           className="shrink-0 font-medium text-carrot-dark hover:underline"
         >

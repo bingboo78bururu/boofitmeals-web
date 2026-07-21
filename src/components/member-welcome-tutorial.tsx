@@ -1,90 +1,143 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const slides = [
+type Step = { targetId: string; text: string };
+
+// 각 단계가 가리키는 요소는 goal-banner.tsx(#tour-goal-setting)와
+// member/layout.tsx의 bottomNav id들에 대응한다.
+const steps: Step[] = [
   {
-    icon: "🎯",
-    title: "식단 목표를 설정하고\n식사 사진을 올려보세요!",
-    description:
-      "AI코치가 즉시 채점해드려요. 목표에 따라 AI 채점 기준이 달라지니 정확하게 설정해주세요!",
+    targetId: "tour-goal-setting",
+    text: "처음 오셨나요? 먼저 목표를 설정해주세요!\n(*식단 목표에 따라 AI 채점 기준이 달라집니다)",
   },
   {
-    icon: "💬",
-    title: "매일 밤, 영양코치님의\n전문 피드백을 확인해보세요",
-    description: "AI 채점에 더해, 담당 영양코치가 직접 남기는 피드백도 함께 받아볼 수 있어요.",
+    targetId: "bottom-nav-mission",
+    text: "여기서 매 끼니 식단 사진을 올려보세요!\nAI가 즉시 채점해드려요.",
   },
   {
-    icon: "🥕",
-    title: "좋은 식사에는\n당근을 드려요!",
-    description: "당근을 모아 캘린더를 채우고, 우리 반 친구들과 함께 경쟁해보세요.",
+    targetId: "bottom-nav-carrot",
+    text: "모은 당근은 여기서 확인해요.\n한 달에 100개를 모으면 등록비 전액을 환급해드려요!",
+  },
+  {
+    targetId: "bottom-nav-feed",
+    text: "같은 클래스 친구들의 인증 현황과\n랭킹을 여기서 볼 수 있어요.",
+  },
+  {
+    targetId: "bottom-nav-growth",
+    text: "체중·체지방률 변화 그래프는\n여기서 확인하세요.",
   },
 ];
 
+type Rect = { top: number; left: number; width: number; height: number };
+
+const CALLOUT_WIDTH = 256;
+const CALLOUT_MARGIN = 12;
+
 export function MemberWelcomeTutorial() {
-  const [step, setStep] = useState(0);
   const router = useRouter();
+  const [stepIndex, setStepIndex] = useState(0);
+  const [rect, setRect] = useState<Rect | null>(null);
 
   function close() {
     router.replace("/member");
   }
 
-  const slide = slides[step];
-  const isLast = step === slides.length - 1;
+  useEffect(() => {
+    function measure() {
+      const step = steps[stepIndex];
+      const el = document.getElementById(step.targetId);
+      if (!el) {
+        // 대상이 화면에 없으면(예: 이미 목표가 설정돼 배너 문구가 달라진 경우)
+        // 다음 단계로 자동으로 건너뛴다.
+        if (stepIndex < steps.length - 1) {
+          setStepIndex((i) => i + 1);
+        } else {
+          close();
+        }
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+    }
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIndex]);
+
+  if (!rect) return null;
+
+  const step = steps[stepIndex];
+  const isLast = stepIndex === steps.length - 1;
+  const pad = 6;
+  const spot = {
+    top: rect.top - pad,
+    left: rect.left - pad,
+    width: rect.width + pad * 2,
+    height: rect.height + pad * 2,
+  };
+
+  const roomBelow = window.innerHeight - (spot.top + spot.height);
+  const calloutBelow = roomBelow > 160;
+  const calloutLeft = Math.min(
+    Math.max(spot.left, CALLOUT_MARGIN),
+    window.innerWidth - CALLOUT_WIDTH - CALLOUT_MARGIN
+  );
+
+  function next() {
+    if (stepIndex < steps.length - 1) {
+      setStepIndex((i) => i + 1);
+    } else {
+      close();
+    }
+  }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
-      onClick={close}
-    >
+    <div className="fixed inset-0 z-50">
       <div
-        className="relative w-full max-w-sm rounded-2xl bg-card p-6 text-center shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+        className="absolute rounded-xl border-2 border-carrot"
+        style={{
+          top: spot.top,
+          left: spot.left,
+          width: spot.width,
+          height: spot.height,
+          boxShadow: "0 0 0 9999px rgba(0,0,0,0.65)",
+        }}
+      />
+
+      <div
+        className="absolute rounded-2xl bg-card p-4 text-center shadow-xl"
+        style={{
+          width: CALLOUT_WIDTH,
+          left: calloutLeft,
+          top: calloutBelow
+            ? spot.top + spot.height + CALLOUT_MARGIN
+            : spot.top - CALLOUT_MARGIN - 140,
+        }}
       >
-        <button
-          type="button"
-          onClick={close}
-          aria-label="닫기"
-          className="absolute right-4 top-4 text-ink-soft hover:text-ink"
-        >
-          ✕
-        </button>
-
-        <div className="mt-4 text-5xl">{slide.icon}</div>
-        <h2 className="mt-4 whitespace-pre-line text-lg font-bold leading-snug text-ink">
-          {slide.title}
-        </h2>
-        <p className="mt-3 text-sm text-ink-soft">{slide.description}</p>
-
-        <div className="mt-6 flex items-center justify-center gap-2">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`${i + 1}번째 화면으로 이동`}
-              onClick={() => setStep(i)}
-              className={`h-2 rounded-full transition-all ${
-                i === step ? "w-6 bg-carrot" : "w-2 bg-line"
-              }`}
-            />
-          ))}
-        </div>
-
-        <div className="mt-6 flex items-center justify-between">
+        <p className="whitespace-pre-line text-sm font-medium text-ink">
+          {step.text}
+        </p>
+        <div className="mt-3 flex items-center justify-between">
           <button
             type="button"
             onClick={close}
-            className="text-sm text-ink-soft hover:text-ink"
+            className="text-xs text-ink-soft hover:text-ink"
           >
             건너뛰기
           </button>
+          <span className="text-xs text-ink-soft">
+            {stepIndex + 1}/{steps.length}
+          </span>
           <button
             type="button"
-            onClick={isLast ? close : () => setStep((s) => s + 1)}
-            className="rounded-full bg-carrot px-5 py-2 text-sm font-semibold text-white hover:bg-carrot-dark"
+            onClick={next}
+            className="rounded-full bg-carrot px-4 py-1.5 text-xs font-semibold text-white hover:bg-carrot-dark"
           >
-            {isLast ? "시작하기" : "다음"}
+            {isLast ? "확인" : "다음"}
           </button>
         </div>
       </div>

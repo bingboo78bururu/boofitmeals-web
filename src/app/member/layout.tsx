@@ -10,10 +10,10 @@ import {
 } from "@/components/icons";
 
 const bottomNav = [
-  { href: "/member/feed", label: "우리 반", icon: <FeedIcon /> },
-  { href: "/member/growth", label: "내 변화", icon: <GrowthIcon /> },
-  { href: "/member", label: "식단 인증", icon: <HomeIcon /> },
-  { href: "/member/calendar", label: "당근 현황", icon: <CarrotIcon /> },
+  { href: "/member/feed", label: "우리 반", icon: <FeedIcon />, id: "bottom-nav-feed" },
+  { href: "/member/growth", label: "내 변화", icon: <GrowthIcon />, id: "bottom-nav-growth" },
+  { href: "/member", label: "식단 인증", icon: <HomeIcon />, id: "bottom-nav-mission" },
+  { href: "/member/calendar", label: "당근 현황", icon: <CarrotIcon />, id: "bottom-nav-carrot" },
   { href: "/member/mypage", label: "MY", icon: <MyPageIcon /> },
 ];
 
