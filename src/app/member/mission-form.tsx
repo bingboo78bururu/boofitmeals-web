@@ -156,11 +156,12 @@ export function MissionForm({
             />
           )}
           <label className="flex min-w-0 flex-1 cursor-pointer flex-col gap-1 text-sm">
-            <span className="font-medium">식단 사진 (선택)</span>
+            <span className="font-medium">식단 사진</span>
             <input
               type="file"
               name="photo"
               accept="image/png,image/jpeg"
+              required={!existingPhotoUrl}
               onChange={async (e) => {
                 const input = e.target;
                 const file = input.files?.[0];

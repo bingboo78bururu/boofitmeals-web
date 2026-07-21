@@ -212,11 +212,22 @@ export async function submitMission(
   const today = todayString();
   const supabase = await createClient();
 
+  const { data: existingMission } = await supabase
+    .from("missions")
+    .select("photo_url")
+    .eq("member_id", profile.id)
+    .eq("mission_date", today)
+    .eq("meal_type", mealType)
+    .maybeSingle();
+
   let photoUrl: string | undefined;
   // undefined = 이번 제출에 새 사진 없음(기존 점수 유지) / null = 채점 실패 / 0|1|2 = 채점 성공
   let aiScore: 0 | 1 | 2 | null | undefined;
   let aiScoreReason: string | null = null;
   const photo = formData.get("photo");
+  if (!(photo instanceof File && photo.size > 0) && !existingMission?.photo_url) {
+    return { error: "식단 사진을 올려주세요." };
+  }
   if (photo instanceof File && photo.size > 0) {
     if (photo.size > 4 * 1024 * 1024) {
       return { error: "사진은 4MB 이하로 올려주세요." };
