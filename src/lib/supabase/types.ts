@@ -204,6 +204,17 @@ export interface Database {
         Args: { check_name: string };
         Returns: boolean;
       };
+      admin_user_directory: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          name: string;
+          role: UserRole;
+          email: string | null;
+          class_id: string | null;
+          created_at: string;
+        }[];
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

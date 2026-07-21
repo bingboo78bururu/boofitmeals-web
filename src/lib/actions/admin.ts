@@ -48,3 +48,49 @@ export async function createClass(
   revalidatePath("/signup/class");
   return { success: true };
 }
+
+export async function deleteClass(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  await requireRole("admin");
+
+  const classId = String(formData.get("class_id") ?? "");
+  if (!classId) return { error: "삭제할 클래스가 올바르지 않아요." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("classes").delete().eq("id", classId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin");
+  revalidatePath("/signup/class");
+  revalidatePath("/member/feed");
+  return { success: true };
+}
+
+export async function reassignMemberClass(
+  _prevState: SimpleFormState,
+  formData: FormData
+): Promise<SimpleFormState> {
+  await requireRole("admin");
+
+  const memberId = String(formData.get("member_id") ?? "");
+  const classId = String(formData.get("class_id") ?? "");
+  if (!memberId || !classId) {
+    return { error: "회원과 클래스를 모두 선택해주세요." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ class_id: classId })
+    .eq("id", memberId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin");
+  revalidatePath("/member/feed");
+  revalidatePath("/member/mypage");
+  return { success: true };
+}

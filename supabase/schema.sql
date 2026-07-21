@@ -134,6 +134,29 @@ as $$
   select class_id from public.profiles where id = auth.uid();
 $$;
 
+-- 운영자 전용 사용자 디렉토리(이메일 포함). auth.users는 일반 권한으로 조회할 수
+-- 없으므로 security definer로 감싸고, my_role()이 admin이 아니면 빈 결과를 반환한다.
+create function public.admin_user_directory()
+returns table (
+  id uuid,
+  name text,
+  role user_role,
+  email text,
+  class_id uuid,
+  created_at timestamptz
+)
+language sql
+security definer set search_path = public
+stable
+as $$
+  select p.id, p.name, p.role, u.email, p.class_id, p.created_at
+  from public.profiles p
+  join auth.users u on u.id = p.id
+  where public.my_role() = 'admin';
+$$;
+
+grant execute on function public.admin_user_directory() to authenticated;
+
 -- 회원은 note/photo/ai_score만, 담당 코치는 coach_score만 수정 가능하도록 컬럼 단위로 제한
 create function public.enforce_mission_update_columns()
 returns trigger
@@ -204,6 +227,11 @@ create policy "users update own profile"
   on profiles for update
   to authenticated
   using (id = auth.uid());
+
+create policy "profiles update by admin"
+  on profiles for update
+  to authenticated
+  using (public.my_role() = 'admin');
 
 -- goals: 본인, 담당 영양코치, 운영자만 조회/작성
 create policy "goals select"
