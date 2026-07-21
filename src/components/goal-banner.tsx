@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { diffDays, todayString } from "@/lib/dates";
-import { goalUnitSuffix } from "@/lib/roles";
+import { goalUnitLabel, goalUnitSuffix } from "@/lib/roles";
 import { latestBodyLogValue } from "@/lib/goal";
 
 function EmptyBanner() {
@@ -60,7 +60,7 @@ export async function GoalBanner({ memberId }: { memberId: string }) {
   return (
     <div className="border-b border-line bg-cream-soft">
       <div className="mx-auto max-w-5xl px-6 py-2.5 text-sm font-medium text-carrot-dark">
-        🎯 내 목표: {currentValue}
+        🎯 내 목표: {goalUnitLabel[goal.unit]} {currentValue}
         {suffix} → {goal.target_value}
         {suffix} · {dDayText}
       </div>
