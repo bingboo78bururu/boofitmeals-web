@@ -143,7 +143,7 @@ export function MissionForm({
           rows={3}
           defaultValue={existingNote ?? ""}
           placeholder={MEAL_PLACEHOLDER[mealType]}
-          className="rounded-xl border border-line bg-background px-4 py-3 outline-none focus:border-carrot"
+          className="resize-none rounded-xl border border-line bg-background px-4 py-3 outline-none focus:border-carrot"
         />
 
         <div className="flex flex-wrap items-center gap-4">
