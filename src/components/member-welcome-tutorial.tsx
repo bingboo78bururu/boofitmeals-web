@@ -3,14 +3,20 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-type Step = { targetId: string; text: string; padTop?: number };
+type Step = {
+  targetId: string;
+  text: string;
+  padTop?: number;
+  showAiRubric?: boolean;
+};
 
 // 각 단계가 가리키는 요소는 goal-banner.tsx(#tour-goal-setting)와
 // member/layout.tsx의 bottomNav id들에 대응한다.
 const steps: Step[] = [
   {
     targetId: "tour-goal-setting",
-    text: "처음 오셨나요? 먼저 목표를 설정해주세요!\n(*식단 목표에 따라 AI 채점 기준이 달라집니다)",
+    text: "처음 오셨나요? 먼저 목표를 설정해주세요!",
+    showAiRubric: true,
   },
   {
     targetId: "bottom-nav-mission",
@@ -151,7 +157,7 @@ export function MemberWelcomeTutorial() {
       />
 
       <div
-        className="absolute rounded-2xl bg-card p-4 text-center shadow-xl"
+        className="absolute flex flex-col gap-2"
         style={{
           width: calloutWidth,
           left: calloutLeft,
@@ -160,48 +166,71 @@ export function MemberWelcomeTutorial() {
             : spot.top - CALLOUT_MARGIN - 140,
         }}
       >
-        <p className="whitespace-pre-line text-sm font-medium text-ink">
-          {step.text}
-        </p>
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            {!isFirst && (
+        <div className="rounded-2xl bg-card p-4 text-center shadow-xl">
+          <p className="whitespace-pre-line text-sm font-medium text-ink">
+            {step.text}
+          </p>
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3">
+              {!isFirst && (
+                <button
+                  type="button"
+                  onClick={prev}
+                  disabled={isPending}
+                  className="text-xs text-ink-soft hover:text-ink disabled:opacity-60"
+                >
+                  이전
+                </button>
+              )}
               <button
                 type="button"
-                onClick={prev}
+                onClick={() => close("skip")}
                 disabled={isPending}
                 className="text-xs text-ink-soft hover:text-ink disabled:opacity-60"
               >
-                이전
+                {isPending && closingVia === "skip" ? (
+                  <DotsLoader />
+                ) : (
+                  "건너뛰기"
+                )}
               </button>
-            )}
+            </div>
+            <span className="shrink-0 text-xs text-ink-soft">
+              {stepIndex + 1}/{steps.length}
+            </span>
             <button
               type="button"
-              onClick={() => close("skip")}
+              onClick={next}
               disabled={isPending}
-              className="text-xs text-ink-soft hover:text-ink disabled:opacity-60"
+              className="rounded-full bg-carrot px-4 py-1.5 text-xs font-semibold text-white hover:bg-carrot-dark disabled:opacity-60"
             >
-              {isPending && closingVia === "skip" ? <DotsLoader /> : "건너뛰기"}
+              {isPending && closingVia === "confirm" ? (
+                <DotsLoader />
+              ) : isLast ? (
+                "확인"
+              ) : (
+                "다음"
+              )}
             </button>
           </div>
-          <span className="shrink-0 text-xs text-ink-soft">
-            {stepIndex + 1}/{steps.length}
-          </span>
-          <button
-            type="button"
-            onClick={next}
-            disabled={isPending}
-            className="rounded-full bg-carrot px-4 py-1.5 text-xs font-semibold text-white hover:bg-carrot-dark disabled:opacity-60"
-          >
-            {isPending && closingVia === "confirm" ? (
-              <DotsLoader />
-            ) : isLast ? (
-              "확인"
-            ) : (
-              "다음"
-            )}
-          </button>
         </div>
+
+        {step.showAiRubric && (
+          <div className="rounded-2xl border border-line bg-card p-4 text-left shadow-xl">
+            <p className="text-xs font-bold text-carrot-dark">
+              🤖 AI는 이렇게 채점해요
+            </p>
+            <ul className="mt-2 space-y-1 text-xs text-ink-soft">
+              <li>0점 · 식사 사진이 아니거나 성의 없이 찍음</li>
+              <li>1점 · 성실하게 찍었지만 구성이나 양이 부족</li>
+              <li>2점 · 구성도 좋고 양도 충분</li>
+            </ul>
+            <p className="mt-2 text-xs text-ink-soft">
+              감량 목적이면 저탄수·채소·단백질 위주, 증량 목적이면 단백질과
+              충분한 칼로리 기준으로 채점 기준이 달라져요.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
