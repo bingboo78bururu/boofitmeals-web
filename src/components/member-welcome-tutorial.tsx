@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-type Step = { targetId: string; text: string };
+type Step = { targetId: string; text: string; padTop?: number };
 
 // 각 단계가 가리키는 요소는 goal-banner.tsx(#tour-goal-setting)와
 // member/layout.tsx의 bottomNav id들에 대응한다.
@@ -15,6 +15,8 @@ const steps: Step[] = [
   {
     targetId: "bottom-nav-mission",
     text: "여기서 매 끼니 식단 사진을 올려보세요!\nAI가 즉시 채점해드려요.",
+    // 가운데 탭은 아이콘이 -mt-6로 위로 떠 있어서, 그만큼 강조 박스도 위로 더 늘려야 안 잘림
+    padTop: 32,
   },
   {
     targetId: "bottom-nav-carrot",
@@ -32,17 +34,47 @@ const steps: Step[] = [
 
 type Rect = { top: number; left: number; width: number; height: number };
 
-const CALLOUT_WIDTH = 256;
+const CALLOUT_MAX_WIDTH = 320;
 const CALLOUT_MARGIN = 12;
+
+function DotsLoader() {
+  return (
+    <span className="inline-flex items-center gap-0.5 py-0.5">
+      <span
+        className="h-1 w-1 animate-bounce rounded-full bg-current"
+        style={{ animationDelay: "-0.3s" }}
+      />
+      <span
+        className="h-1 w-1 animate-bounce rounded-full bg-current"
+        style={{ animationDelay: "-0.15s" }}
+      />
+      <span className="h-1 w-1 animate-bounce rounded-full bg-current" />
+    </span>
+  );
+}
 
 export function MemberWelcomeTutorial() {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [closingVia, setClosingVia] = useState<"skip" | "confirm" | null>(null);
 
-  function close() {
-    router.replace("/member");
+  function close(via: "skip" | "confirm") {
+    setClosingVia(via);
+    startTransition(() => {
+      router.replace("/member");
+    });
   }
+
+  // 튜토리얼이 떠 있는 동안 배경 스크롤 잠금
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
 
   useEffect(() => {
     function measure() {
@@ -54,7 +86,7 @@ export function MemberWelcomeTutorial() {
         if (stepIndex < steps.length - 1) {
           setStepIndex((i) => i + 1);
         } else {
-          close();
+          close("confirm");
         }
         return;
       }
@@ -71,27 +103,37 @@ export function MemberWelcomeTutorial() {
   if (!rect) return null;
 
   const step = steps[stepIndex];
+  const isFirst = stepIndex === 0;
   const isLast = stepIndex === steps.length - 1;
   const pad = 6;
+  const padTop = step.padTop ?? pad;
   const spot = {
-    top: rect.top - pad,
+    top: rect.top - padTop,
     left: rect.left - pad,
     width: rect.width + pad * 2,
-    height: rect.height + pad * 2,
+    height: rect.height + padTop + pad,
   };
 
+  const calloutWidth = Math.min(
+    CALLOUT_MAX_WIDTH,
+    window.innerWidth - CALLOUT_MARGIN * 2
+  );
   const roomBelow = window.innerHeight - (spot.top + spot.height);
   const calloutBelow = roomBelow > 160;
   const calloutLeft = Math.min(
     Math.max(spot.left, CALLOUT_MARGIN),
-    window.innerWidth - CALLOUT_WIDTH - CALLOUT_MARGIN
+    window.innerWidth - calloutWidth - CALLOUT_MARGIN
   );
+
+  function prev() {
+    if (stepIndex > 0) setStepIndex((i) => i - 1);
+  }
 
   function next() {
     if (stepIndex < steps.length - 1) {
       setStepIndex((i) => i + 1);
     } else {
-      close();
+      close("confirm");
     }
   }
 
@@ -111,7 +153,7 @@ export function MemberWelcomeTutorial() {
       <div
         className="absolute rounded-2xl bg-card p-4 text-center shadow-xl"
         style={{
-          width: CALLOUT_WIDTH,
+          width: calloutWidth,
           left: calloutLeft,
           top: calloutBelow
             ? spot.top + spot.height + CALLOUT_MARGIN
@@ -121,23 +163,43 @@ export function MemberWelcomeTutorial() {
         <p className="whitespace-pre-line text-sm font-medium text-ink">
           {step.text}
         </p>
-        <div className="mt-3 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={close}
-            className="text-xs text-ink-soft hover:text-ink"
-          >
-            건너뛰기
-          </button>
-          <span className="text-xs text-ink-soft">
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            {!isFirst && (
+              <button
+                type="button"
+                onClick={prev}
+                disabled={isPending}
+                className="text-xs text-ink-soft hover:text-ink disabled:opacity-60"
+              >
+                이전
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => close("skip")}
+              disabled={isPending}
+              className="text-xs text-ink-soft hover:text-ink disabled:opacity-60"
+            >
+              {isPending && closingVia === "skip" ? <DotsLoader /> : "건너뛰기"}
+            </button>
+          </div>
+          <span className="shrink-0 text-xs text-ink-soft">
             {stepIndex + 1}/{steps.length}
           </span>
           <button
             type="button"
             onClick={next}
-            className="rounded-full bg-carrot px-4 py-1.5 text-xs font-semibold text-white hover:bg-carrot-dark"
+            disabled={isPending}
+            className="rounded-full bg-carrot px-4 py-1.5 text-xs font-semibold text-white hover:bg-carrot-dark disabled:opacity-60"
           >
-            {isLast ? "확인" : "다음"}
+            {isPending && closingVia === "confirm" ? (
+              <DotsLoader />
+            ) : isLast ? (
+              "확인"
+            ) : (
+              "다음"
+            )}
           </button>
         </div>
       </div>
