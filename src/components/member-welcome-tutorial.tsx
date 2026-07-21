@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 type Step = {
@@ -16,13 +16,13 @@ const steps: Step[] = [
   {
     targetId: "tour-goal-setting",
     text: "처음 오셨나요? 먼저 목표를 설정해주세요!",
-    showAiRubric: true,
   },
   {
     targetId: "bottom-nav-mission",
     text: "여기서 매 끼니 식단 사진을 올려보세요!\nAI가 즉시 채점해드려요.",
     // 가운데 탭은 아이콘이 -mt-6로 위로 떠 있어서, 그만큼 강조 박스도 위로 더 늘려야 안 잘림
     padTop: 32,
+    showAiRubric: true,
   },
   {
     targetId: "bottom-nav-carrot",
@@ -65,6 +65,8 @@ export function MemberWelcomeTutorial() {
   const [rect, setRect] = useState<Rect | null>(null);
   const [isPending, startTransition] = useTransition();
   const [closingVia, setClosingVia] = useState<"skip" | "confirm" | null>(null);
+  const calloutRef = useRef<HTMLDivElement>(null);
+  const [calloutHeight, setCalloutHeight] = useState(140);
 
   function close(via: "skip" | "confirm") {
     setClosingVia(via);
@@ -106,6 +108,14 @@ export function MemberWelcomeTutorial() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIndex]);
 
+  // 카드 내용(예: AI 채점기준 카드 유무)에 따라 실제 렌더 높이가 달라지므로,
+  // "대상 위쪽에 띄워야 하는" 단계의 위치 계산에 고정값 대신 실측 높이를 쓴다.
+  useLayoutEffect(() => {
+    if (!calloutRef.current) return;
+    const h = calloutRef.current.getBoundingClientRect().height;
+    if (Math.abs(h - calloutHeight) > 0.5) setCalloutHeight(h);
+  });
+
   if (!rect) return null;
 
   const step = steps[stepIndex];
@@ -125,7 +135,7 @@ export function MemberWelcomeTutorial() {
     window.innerWidth - CALLOUT_MARGIN * 2
   );
   const roomBelow = window.innerHeight - (spot.top + spot.height);
-  const calloutBelow = roomBelow > 160;
+  const calloutBelow = roomBelow > calloutHeight + CALLOUT_MARGIN;
   const calloutLeft = Math.min(
     Math.max(spot.left, CALLOUT_MARGIN),
     window.innerWidth - calloutWidth - CALLOUT_MARGIN
@@ -157,13 +167,17 @@ export function MemberWelcomeTutorial() {
       />
 
       <div
+        ref={calloutRef}
         className="absolute flex flex-col gap-2"
         style={{
           width: calloutWidth,
           left: calloutLeft,
           top: calloutBelow
             ? spot.top + spot.height + CALLOUT_MARGIN
-            : spot.top - CALLOUT_MARGIN - 140,
+            : Math.max(
+                CALLOUT_MARGIN,
+                spot.top - CALLOUT_MARGIN - calloutHeight
+              ),
         }}
       >
         <div className="rounded-2xl bg-card p-4 text-center shadow-xl">
