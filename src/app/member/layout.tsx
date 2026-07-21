@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell";
 import { GoalBanner } from "@/components/goal-banner";
 import {
-  CalendarIcon,
+  CarrotIcon,
   FeedIcon,
   GrowthIcon,
   HomeIcon,
@@ -13,7 +13,7 @@ const bottomNav = [
   { href: "/member/feed", label: "우리 반", icon: <FeedIcon /> },
   { href: "/member/growth", label: "내 변화", icon: <GrowthIcon /> },
   { href: "/member", label: "식단 인증", icon: <HomeIcon /> },
-  { href: "/member/calendar", label: "당근캘린더", icon: <CalendarIcon /> },
+  { href: "/member/calendar", label: "당근 현황", icon: <CarrotIcon /> },
   { href: "/member/mypage", label: "MY", icon: <MyPageIcon /> },
 ];
 

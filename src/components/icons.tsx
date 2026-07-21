@@ -51,11 +51,11 @@ export function HomeIcon() {
   );
 }
 
-export function CalendarIcon() {
+export function CarrotIcon() {
   return (
     <Svg>
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
-      <path d="M3.5 10h17M8 3v4M16 3v4" />
+      <path d="M12 8.5c2.8 0 4.7 2.7 3.6 6.7-1 3.7-3 6.3-3.6 6.3s-2.6-2.6-3.6-6.3C7.3 11.2 9.2 8.5 12 8.5Z" />
+      <path d="M12 8.5V4M9.3 6.2 8 3.5M14.7 6.2 16 3.5" />
     </Svg>
   );
 }

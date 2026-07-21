@@ -83,7 +83,10 @@ export default async function CalendarPage({
     if (!scoresByDay.has(day)) scoresByDay.set(day, new Map());
     scoresByDay.get(day)!.set(m.meal_type, finalScore(m));
   }
-  const markedDays = new Set(scoresByDay.keys());
+  const monthlyCarrotTotal = (missions ?? []).reduce(
+    (sum, m) => sum + finalScore(m),
+    0
+  );
 
   const daysInMonth = monthEnd.getDate();
   const leadingBlanks = monthStart.getDay();
@@ -108,7 +111,7 @@ export default async function CalendarPage({
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">당근 캘린더</h1>
+          <h1 className="text-2xl font-bold">당근 현황</h1>
           <p className="mt-1 text-sm text-ink-soft">
             식단을 인증해서 당근을 채워보세요.
           </p>
@@ -184,7 +187,8 @@ export default async function CalendarPage({
       </div>
 
       <p className="text-sm text-ink-soft">
-        이번달 {markedDays.size}일 실천했어요.
+        이번달 총 당근 {monthlyCarrotTotal}개 모았어요. 이번달 당근이 100개가 되면 등록비용
+        전액을 환급해드려요.
       </p>
     </div>
   );
