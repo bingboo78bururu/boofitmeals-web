@@ -32,7 +32,7 @@ const steps: Step[] = [
 
 type Rect = { top: number; left: number; width: number; height: number };
 
-const CALLOUT_MAX_WIDTH = 320;
+const CALLOUT_MAX_WIDTH = 380;
 const CALLOUT_MARGIN = 12;
 
 function DotsLoader() {
