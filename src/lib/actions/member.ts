@@ -6,6 +6,7 @@ import { requireRole } from "@/lib/auth";
 import { scoreMissionPhoto } from "@/lib/ai-score";
 import { todayString } from "@/lib/dates";
 import { BODY_LOG_FIELD_BY_UNIT } from "@/lib/goal";
+import { sendMissionSubmittedEmail } from "@/lib/email";
 import type { GoalUnit, MealType } from "@/lib/supabase/types";
 
 const MEAL_TYPES: MealType[] = ["breakfast", "lunch", "dinner"];
@@ -270,6 +271,20 @@ export async function submitMission(
   );
 
   if (error) return { error: error.message };
+
+  // 실제로 새 사진이 올라온 경우에만 코치에게 알림(노트만 고친 재제출은 스킵)
+  if (photo instanceof File && photo.size > 0) {
+    const { data: coachEmail } = await supabase.rpc("my_coach_email");
+    if (coachEmail) {
+      // Vercel 서버리스 함수는 응답 후 곧바로 종료될 수 있어 fire-and-forget 대신 await한다.
+      await sendMissionSubmittedEmail({
+        coachEmail,
+        memberName: profile.name,
+        mealType,
+        missionDate: today,
+      });
+    }
+  }
 
   revalidatePath("/member");
   revalidatePath("/member/calendar");

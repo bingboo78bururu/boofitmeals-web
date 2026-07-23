@@ -157,6 +157,22 @@ $$;
 
 grant execute on function public.admin_user_directory() to authenticated;
 
+-- 회원이 미션을 올릴 때 담당 코치에게 이메일 알림을 보내기 위해, 회원 본인 세션에서
+-- "내 담당 코치의 이메일"만 안전하게 조회하는 함수(auth.uid()로 본인 배정만 조회).
+create function public.my_coach_email()
+returns text
+language sql
+security definer set search_path = public
+stable
+as $$
+  select u.email
+  from public.coach_assignments ca
+  join auth.users u on u.id = ca.coach_id
+  where ca.member_id = auth.uid();
+$$;
+
+grant execute on function public.my_coach_email() to authenticated;
+
 -- 회원은 note/photo/ai_score만, 담당 코치는 coach_score만 수정 가능하도록 컬럼 단위로 제한
 create function public.enforce_mission_update_columns()
 returns trigger

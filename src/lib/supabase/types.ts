@@ -215,6 +215,10 @@ export interface Database {
           created_at: string;
         }[];
       };
+      my_coach_email: {
+        Args: Record<string, never>;
+        Returns: string | null;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
